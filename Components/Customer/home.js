@@ -5,7 +5,6 @@ import color from '../../Contains/color'
 import Icon from 'react-native-vector-icons/Entypo'
 import Icon1 from 'react-native-vector-icons/FontAwesome'
 import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons'
-import { useRoute } from '@react-navigation/native'
 import MapView, { Marker } from 'react-native-maps'
 import axios from 'axios';
 import * as Location from 'expo-location';
@@ -16,12 +15,7 @@ import { useFocusEffect } from '@react-navigation/native'
 
 const Home = ({ navigation }) => {
    const { address, setAddress } = useContext(AppContext)
-   // const API_KEY_GEOCODE = 'AIzaSyDCvGy8hmWNcrt9aslb7m8yIbhkwHvhIYo'
-   const API_KEY_GEOCODE = 'AIzaSyCS-qxrrYUPQH_R_ZfLdHhqlnGSOwtIhRs'
-   // const navigation = useNavigation()
-   const route = useRoute()
-   // const [currentLocation, setCurrentLocation] = useState(null);
-   // const [address, setAddress] = useState('');
+   const API_KEY_GEOCODE = 'uGwlo6yHxKnoqSPqp0Enla92wOd1YpmpbYrEy3GK'
    const [latitude, setLatitude] = useState(null)
    const [longitude, setLongitude] = useState(null)
    const [region, setRegion] = useState(null)
@@ -34,7 +28,7 @@ const Home = ({ navigation }) => {
       navigation.navigate('placeDelivery')
    }
 
-   useFocusEffect(() => {
+   useEffect(() => {
       (async () => {
          let { status } = await Location.requestForegroundPermissionsAsync();
          if (status !== 'granted') {
@@ -42,29 +36,30 @@ const Home = ({ navigation }) => {
             return
          }
          let location = await Location.getCurrentPositionAsync();
+         await AsyncStorage.setItem('origin', `${location.coords.latitude},${location.coords.longitude}`)
          try {
             const response = await axios.get(
-               `https://maps.googleapis.com/maps/api/geocode/json?latlng=${location.coords.latitude},${location.coords.longitude}&key=${API_KEY_GEOCODE}`
+               `https://rsapi.goong.io/Geocode?latlng=${location.coords.latitude},${location.coords.longitude}&api_key=${API_KEY_GEOCODE}`
             )
             const data = response.data
             console.log(data)
             if (data.status === 'OK' && data.results.length > 0) {
                const locate = data.results[1].formatted_address
                await AsyncStorage.setItem('setCurrPos', locate)
+               await AsyncStorage.setItem('setCurrAddress', locate)
                setAddress(locate)
             }
          } catch (error) {
             console.log(error.message)
          }
       })()
-
-   })
+   },[])
 
    useEffect(() => {
       const renderMap = async () => {
          try {
             const itemLocate = address
-            const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${itemLocate}&key=${API_KEY_GEOCODE}`)
+            const response = await axios.get(`https://rsapi.goong.io/Geocode?address=${itemLocate}&api_key=${API_KEY_GEOCODE}`)
             const data = response.data
 
             if (data.status === 'OK' && data.results.length > 0) {

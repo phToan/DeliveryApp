@@ -6,15 +6,15 @@ import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons'
 import Icon3 from 'react-native-vector-icons/Entypo'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-const PlaceDelivery = ({navigation}) => {
-    const API_KEY = 'AIzaSyCS-qxrrYUPQH_R_ZfLdHhqlnGSOwtIhRs'
+const PlaceDelivery = ({ navigation }) => {
+    const API_KEY = 'uGwlo6yHxKnoqSPqp0Enla92wOd1YpmpbYrEy3GK'
     const [addressDetail, setAddressDetail] = useState('')
     const [searchTerm, setSearchTerm] = useState('');
     const [predictions, setPredictions] = useState([]);
 
     const handleSearch = async (text) => {
         setSearchTerm(text);
-        const apiUrl = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${text}&components=country:VN&key=${API_KEY}`;
+        const apiUrl = `https://rsapi.goong.io/Place/AutoComplete?input=${text}&components=country:VN&api_key=${API_KEY}`;
         try {
             const response = await fetch(apiUrl);
             const data = await response.json();
@@ -31,12 +31,29 @@ const PlaceDelivery = ({navigation}) => {
     const onClickConfirm = async () => {
         navigation.navigate('shipmentDetails')
         await AsyncStorage.setItem('itemSelected', addressDetail)
+        getReceiverCoordinates(addressDetail)
     }
     const onClickItem = async (item) => {
         await AsyncStorage.setItem('itemSelected', item.description)
+        getReceiverCoordinates(item.description)
         navigation.navigate('shipmentDetails')
         setSearchTerm('')
         setPredictions([])
+    }
+    const getReceiverCoordinates = async (address) => {
+        await fetch(`https://rsapi.goong.io/Geocode?address=${encodeURIComponent(address)}&api_key=${API_KEY}`)
+            .then((response) => response.json())
+            .then(async (data) => {
+                if (data.results && data.results.length > 0) {
+                    const { lat, lng } = data.results[0].geometry.location;
+                    await AsyncStorage.setItem('destination', `${lat},${lng}`)
+                } else {
+                    console.error('Không thể lấy được toạ độ từ địa chỉ');
+                }
+            })
+            .catch((error) => {
+                console.error('Lỗi:', error);
+            });
     }
     const onClickAddAddress = () => {
         navigation.navigate('addPlace')

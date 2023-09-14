@@ -18,7 +18,7 @@ const User = ({navigation}) => {
     const [name, setName] = useState('')
     const [phone, setPhone] = useState('')
     const [gender, setGender] = useState(null)
-    const {isUpdate, setUpdate} = React.useContext(AppContext)
+    const {isUpdate, setUpdate, returnSocket} = React.useContext(AppContext)
 
 
     const getData = async () => {
@@ -106,7 +106,8 @@ const User = ({navigation}) => {
         navigation.navigate('userAccount')
     }
     const onClickLogOut = () => {
-        navigation.navigate('Login')
+        returnSocket()
+        navigation.popToTop()
     }
 
 

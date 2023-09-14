@@ -1,147 +1,155 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { View, SafeAreaView, Text, TouchableOpacity, StyleSheet, Image, FlatList, } from 'react-native'
-import Icon from 'react-native-vector-icons/Ionicons'
-import Icon1 from 'react-native-vector-icons/FontAwesome'
-import { useNavigation, useFocusEffect } from '@react-navigation/native'
+import { useIsFocused } from '@react-navigation/native'
 import AppContext from '../../../Context/AppContext'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import axios from 'axios'
+import Icon from 'react-native-vector-icons/MaterialIcons'
 
-const Delivery = ({route}) =>{
-    const navigation = useNavigation()
-    const [data, setData] = useState([])
-    const { socket, reload, setReload } = useContext(AppContext)
-    const [delID, setDelID] = useState('')
- 
-    useEffect(() => {
-       socket.on('orderTaken', (value) => {
-          const dataDriver = JSON.parse(value)
-          console.log(dataDriver.name)
-          // const newItem = data.filter((item)=> item.id === dataDriver.id)
-          // const newData = data.filter((item)=> item.id !== dataDriver.id)
-          // if (newItem !== undefined) {
-          //    setData2((preItem) => [...preItem, newItem])
-          // }
-          // setData(newData)
-          // setValue('2')
-       })
-    }, [])
- 
-    useEffect(() => {
-       if (route?.params?.delItem) {
-          const { id } = route.params.delItem
-          setDelID(id)
-          console.log(delID)
-          const newData = data.filter((item) => item.id !== delID)
-          setData(newData)
- 
-       }
-       // if (reload) {
-       //    navigation.reset({
-       //       index: 0,
-       //       routes: [{ name: 'BottomTab' }],
-       //    })
-       //    // navigation.navigate('BottomTab',{screen:'Đơn hàng'})
-       //    setReload(false)
-       // }
-       // navigation.reset({
-       //    index: 1,
-       //    routes: [{ name: 'BottomTab' }],
-       // })
-    }, [route?.params?.delItem])
- 
-    useEffect(() => {
-       if (route?.params?.myOrder) {
-          setData((preItem) => [...preItem, route?.params?.myOrder])
-          console.log('1')
-       }
-    }, [route?.params?.myOrder])
- 
-    const itemView = ({ item }) => {
-       return (
-          <TouchableOpacity
-             onPress={() => getItem(item)}
-             style={{
-                height: 90,
-                justifyContent: 'center',
-                backgroundColor: '#FEEBD0',
-             }}>
-             <View style={{
-                flexDirection: 'row',
-             }}>
-                <View style={{
-                   borderRadius: 100,
-                   backgroundColor: '#FEEBD0',
-                   justifyContent: 'center',
-                   alignItems: 'center',
-                   flex: 1
-                }}>
-                   {!item.expressShip ? <Icon name='speedometer' size={25} color={'darkorange'} />
-                      : <Icon1 name='rocket' size={25} color={'darkorange'} />}
-                </View>
-                <View style={{ flex: 6 }}>
-                   <Text style={{
-                      fontWeight: 'bold'
-                   }}> {item.recieverName}</Text>
-                   <Text>{item.recieverAddress}</Text>
-                   <Text>{item.price}</Text>
-                </View>
-             </View>
-          </TouchableOpacity>
-       )
-    }
-    const getItem = (item) => {
-       navigation.navigate('detailOrder', { newItem: item })
-    }
- 
-    const separatorView = () => {
-       return (
-          <View style={{
-             height: 1,
-             width: '100%',
-             backgroundColor: '#c8c8c8',
-          }} />
-       )
-    }
- 
-    return (
-       <SafeAreaView style={{ flex: 1,backgroundColor:'#f7f8fa' }}>
-             {data.length === 0 ? (
-                <View style={{
-                   alignItems: 'center'
-                }}>
-                   <Image source={require('../../../../Contains/Image/101.jpg')} style={styles.image101} />
-                   <Text style={styles.text1}>Chưa có đơn hàng ở trạng thái này</Text>
-                </View>
-             ) : (
-                <FlatList
-                   data={data}
-                   renderItem={itemView}
-                   keyExtractor={item => item.id}
-                   ItemSeparatorComponent={separatorView}
-                />
-             )}
- 
- 
-       </SafeAreaView>
-    )
+const Delivery = ({ navigation }) => {
+   const {socket} = useContext(AppContext)
+   const [data, setData] = useState([])
+   const [delID, setDelID] = useState('')
+   const [id, setID] = useState('')
+   const isFocused = useIsFocused()
+
+   useEffect(() => {
+      const getData = async () => {
+         setID(await AsyncStorage.getItem('id'))
+      }
+      const getSocket =()=>{
+         if(socket){
+            socket.on('orderDeliverySuccess', (value) => {
+               navigation.navigate('Đã giao')
+            })
+         }
+      }
+      getData()
+      getSocket()
+   }, [])
+
+   const updateItem = async (payload) => {
+      await axios.put('http://192.168.1.229:5000/order/customer',  payload )
+         .then(res => {
+            if (res.data.err == 0) {
+               navigation.navigate('Đã giao')
+            }
+         })
+         .catch(err => {
+            console.log(err)
+         })
+   }
+
+   const payload = {
+      customer_id: id,
+      status: 2
+   }
+
+   const fetchData = async () => {
+      try {
+         const response = await axios.get('http://192.168.1.229:5000/order/customer', { params: payload })
+         setData(response.data.data.rows);
+      } catch (error) {
+         console.error(error);
+      }
+   };
+
+   useEffect(() => {
+      if (isFocused) {
+         fetchData();
+      }
+   }, [isFocused]);
+
+   const itemView = ({ item }) => {
+      const isExpress = item.infor_shipping
+      return (
+         <TouchableOpacity style={{
+            padding: 10,
+            backgroundColor:'white'
+         }} onPress={() => getItem(item)}>
+            <View style={{ flexDirection: 'row' }}>
+               <View style={{flex:1}}>
+                  {isExpress == 1 ?
+                     <Image source={require('./../../../../Contains/Image/rocketicon.jpg')} style={styles.image} /> :
+                     <Image source={require('./../../../../Contains/Image/flash.png')} style={styles.image} />}
+               </View>
+               <View style={{flex:5}}>
+                  <Text style={styles.t_shipping}>{isExpress ? 'Hỏa Tốc' : 'Tiết kiệm'}</Text>
+                  <Text style={{color:'red'}}><Text style={styles.t_initmoney}>đ</Text> {item.price} -<Text style={{ color: 'blue' }}>- {item.distance} km</Text></Text>
+               </View>
+            </View>
+            <View style={{ flexDirection: 'row', marginHorizontal:20}}>
+               <Icon name='location-on' size={20}/>
+               <Text style={{marginLeft:10}}>{item.sender_address}</Text>
+            </View>
+         </TouchableOpacity>
+      )
+   }
+
+   const getItem = (item) => {
+      navigation.navigate('detailOrder', { 
+         data : item,
+         status: 2
+      })
+   }
+
+   const separatorView = () => {
+      return (
+         <View style={{
+            height: 1,
+            width: '100%',
+            backgroundColor: '#c8c8c8',
+         }} />
+      )
+   }
+
+   return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#f7f8fa', marginTop:5 }}>
+         {data.length === 0 ? (
+            <View style={{
+               alignItems: 'center'
+            }}>
+               <Image source={require('../../../../Contains/Image/101.jpg')} style={styles.image101} />
+               <Text style={styles.text1}>Chưa có đơn hàng ở trạng thái này</Text>
+            </View>
+         ) : (
+            <FlatList
+               data={data}
+               renderItem={itemView}
+               keyExtractor={item => item.id}
+               ItemSeparatorComponent={separatorView}
+            />
+         )}
+
+
+      </SafeAreaView>
+   )
 }
 
 export default Delivery
 
 const styles = StyleSheet.create({
-    image101: {
-       width: 250,
-       height: 250,
-       marginTop: 70,
-       marginBottom: 20
-    },
-    text1: {
-       fontSize: 16,
-       fontWeight: 'bold'
-    },
-    text2: {
-       fontSize: 16,
-       textAlign: 'center',
-       marginHorizontal: 20,
-       marginTop: 10
-    }
- })
+   t_initmoney: {
+      textDecorationLine: 'underline',
+      fontWeight:'bold',
+      fontSize: 16
+   },
+   t_shipping: {
+      fontSize: 16,
+      fontWeight: 'bold'
+   },
+   image: {
+      height: 50,
+      width: 50
+   },
+   text1: {
+      fontSize: 16,
+      fontWeight: 'bold'
+   },
+   image101: {
+      width: 250,
+      height: 250,
+      marginTop: 70,
+      marginBottom: 20
+   },
+})

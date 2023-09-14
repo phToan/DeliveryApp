@@ -2,7 +2,6 @@ import Home from './home';
 import Notification from './notification';
 import Order from './order';
 import User from './user';
-import TabStatus from './Item/ordStatus';
 import Icon from 'react-native-vector-icons/Fontisto'
 import Icon1 from 'react-native-vector-icons/AntDesign'
 import Icon2 from 'react-native-vector-icons/FontAwesome'
@@ -30,7 +29,7 @@ const BottomTab = () => {
             <Tab.Screen
                 options={{
                     tabBarIcon: ({ color }) => < Icon1 name='clockcircle' color={color} size={22} />
-                }} name='Đơn hàng' component={TabStatus} />
+                }} name='Đơn hàng' component={Order} />
             <Tab.Screen
                 options={{
                     tabBarIcon: ({ color }) => < Icon3 name='notifications' color={color} size={24} />

@@ -16,7 +16,6 @@ import EditPassword from "./Components/Customer/Item/user/editPassword";
 import OrderConfirm from "./Components/Customer/Item/orderConfirm"
 import DetailOrder from "./Components/Customer/Item/ItemSender/detailOrder";
 import { AppProvider } from "./Components/Context/AppContext";
-import TabStatus from "./Components/Customer/Item/ordStatus";
 
 
 const Stack = createNativeStackNavigator();
@@ -44,7 +43,6 @@ export default function App() {
           <Stack.Screen name='editPassword' component={EditPassword} />
           <Stack.Screen name='orderConfirm' component={OrderConfirm} />
           <Stack.Screen name='detailOrder' component={DetailOrder} />
-          <Stack.Screen name="tabStatus" component={TabStatus}/>
         </Stack.Navigator>
       </AppProvider>
     </NavigationContainer>

@@ -12,11 +12,11 @@ import { useContext } from 'react'
 
 
 const DetailedAddress = ({navigation}) => {
-   const API_KEY = 'AIzaSyCS-qxrrYUPQH_R_ZfLdHhqlnGSOwtIhRs'
+   const API_KEY = 'uGwlo6yHxKnoqSPqp0Enla92wOd1YpmpbYrEy3GK'
    const { address, setAddress } = useContext(AppContext)
    const route = useRoute()
    const [addressDetail, setAddressDetail] = useState('')
-   const [addAddressDetail, setAddAddressDetail] = useState('')
+   const [addAddressDetail, setAddAddressDetail] = useState('Khong')
    const [nameSender, setNameSender] = useState('')
    const [phoneSender, setPhoneSender] = useState('')
    const [isValidPhone, setValidPhone] = useState(true);
@@ -37,6 +37,22 @@ const DetailedAddress = ({navigation}) => {
       await AsyncStorage.setItem('senderPhone', phoneSender)
       await AsyncStorage.setItem('setCurrAddress', addressDetail)
       await AsyncStorage.setItem('detailAdd', addAddressDetail)
+      getSenderCoordinates(addressDetail)
+   }
+   const getSenderCoordinates = async (address) => {
+      await fetch(`https://rsapi.goong.io/Geocode?address=${encodeURIComponent(address)}&api_key=${API_KEY}`)
+         .then((response) => response.json())
+         .then(async(data) => {
+            if (data.results && data.results.length > 0) {
+               const { lat, lng } = data.results[0].geometry.location;
+               await AsyncStorage.setItem('origin', `${lat},${lng}`)
+            } else {
+               console.error('Không thể lấy được toạ độ từ địa chỉ');
+            }
+         })
+         .catch((error) => {
+            console.error('Lỗi:', error);
+         });
    }
    const verifyPhone = (phone) => {
       let phoneNumberRegex = /^(03[2-9]|05[6-9]|07[0-9]|08[1-9]|09[0-9])+([0-9]{7})$/; // Biểu thức chính quy kiểm tra đầu số Việt Nam
@@ -56,7 +72,7 @@ const DetailedAddress = ({navigation}) => {
          setNameSender(await AsyncStorage.getItem('name'))
          setPhoneSender(await AsyncStorage.getItem('phone'))
          setAddressDetail(await AsyncStorage.getItem('setCurrPos'))
-         setAddAddressDetail(await AsyncStorage.getItem('detailAdd'))
+         // setAddAddressDetail(await AsyncStorage.getItem('detailAdd'))
       }
       getInfor()
    }, [])
@@ -74,7 +90,7 @@ const DetailedAddress = ({navigation}) => {
             const addresses = addressDetail
 
             const response = await axios.get(
-               `https://maps.googleapis.com/maps/api/geocode/json?address=${addresses}&key=${API_KEY}`
+               `https://rsapi.goong.io/Geocode?address=${addresses}&api_key=${API_KEY}`
             )
             const data = response.data
             if (data.status === 'OK' && data.results.length > 0) {
@@ -203,7 +219,6 @@ const styles = StyleSheet.create({
       height: 80,
       backgroundColor: 'white',
       flexDirection: "row",
-      alignItems: 'center',
       alignItems: 'flex-end',
       borderBottomWidth: 0.2,
       borderColor: 'orange',

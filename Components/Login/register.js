@@ -55,7 +55,8 @@ const Register = () => {
    }
    const onClickContinue = async() => {
       //   navigation.navigate('pass',{data})
-      await axios.post('http://192.168.1.229:5000/customer/register',data)
+      // await axios.post('http://192.168.1.229:5000/customer/register',data)
+      await axios.post('http://192.168.61.246:5000/customer/register', data)
       .then( async(res) =>{          
          if(res.data.err == 0){
             await AsyncStorage.setItem('refresh_token',res.data.refresh_token)
@@ -82,7 +83,7 @@ const Register = () => {
               'Authorization': accessToken
           }
       }
-      await axios.get('http://192.168.1.229:5000/customer', data)
+      await axios.get('http://192.168.61.246:5000/customer', data)
           .then(async (res) => {
               await AsyncStorage.setItem('id', res.data.userData.id.toString())
               await AsyncStorage.setItem('name', res.data.userData.name)

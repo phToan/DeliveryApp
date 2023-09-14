@@ -1,5 +1,5 @@
 import { View, SafeAreaView, Text, Image, TouchableOpacity, TextInput, StyleSheet, ImageBackground, ScrollView } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import Icon2 from 'react-native-vector-icons/Entypo'
 import color from '../../Contains/color'
@@ -7,9 +7,10 @@ import SysModal from '../SysModal/sys_modal'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native'
 import axios from 'axios'
-
+import AppContext from '../Context/AppContext'
 
 const Login = () => {
+   const {getSocket} = React.useContext(AppContext)
    const navigation = useNavigation()
    const [hidePass, setHidePass] = useState(true)
    const [showModal, setShowModal] = useState(false)
@@ -56,21 +57,22 @@ const Login = () => {
             'Authorization': accessToken
          }
       }
-      await axios.get('http://192.168.1.229:5000/customer', data)
+      await axios.get('http://192.168.61.246:5000/customer', data)
+      // await axios.get(`${process.env.URL}/customer`, data)
          .then(async(res) => {
             await AsyncStorage.setItem('id',res.data.userData.id.toString())
             await AsyncStorage.setItem('name',res.data.userData.name)
             await AsyncStorage.setItem('dob',res.data.userData.dob)
             await AsyncStorage.setItem('gender',JSON.stringify(res.data.userData.gender))
             await AsyncStorage.setItem('phone',res.data.userData.phone)
-            await AsyncStorage.setItem('point',res.data.userData.point.toString())
          })
          .catch((err) => {
             console.log(err)
          })
    }
    const onClickLogin = async () => {
-      await axios.post('http://192.168.1.229:5000/customer/login', data)
+      await axios.post('http://192.168.61.246:5000/customer/login', data)
+      // await axios.post(`${process.env.URL}/customer/login`, data)
          .then(async (res) => {
             // console.log(res.data.err)
             if (res.data.err == 0) {
@@ -80,6 +82,7 @@ const Login = () => {
                setPassword('')
                setHidePass(true)
                getData()
+               getSocket()
             } else {
                setErrorMessage('Đăng nhập thất bại. Số điện thoại hoặc mật khẩu không chính xác')
                setShowModal(true)

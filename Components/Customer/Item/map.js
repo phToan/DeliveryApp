@@ -11,7 +11,7 @@ import { ScrollView } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const Map = () => {
-   const API_KEY = 'AIzaSyCS-qxrrYUPQH_R_ZfLdHhqlnGSOwtIhRs'
+   const API_KEY = 'uGwlo6yHxKnoqSPqp0Enla92wOd1YpmpbYrEy3GK'
    const navigation = useNavigation()
    Geocoder.init(API_KEY)
    const [currentLocation, setCurrentLocation] = useState(null);

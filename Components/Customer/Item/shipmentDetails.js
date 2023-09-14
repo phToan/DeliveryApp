@@ -30,6 +30,8 @@ const ShipmentDetails = ({ navigation }) => {
       setAdd()
    })
 
+
+
    const OrderInfor = {
       name: name,
       phone: phoneNumber,

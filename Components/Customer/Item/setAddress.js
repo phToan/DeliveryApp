@@ -11,7 +11,7 @@ import * as Location from 'expo-location';
 
 
 const SetAddressSender = ({navigation}) => {
-   const API_KEY = 'AIzaSyCS-qxrrYUPQH_R_ZfLdHhqlnGSOwtIhRs'
+   const API_KEY = 'uGwlo6yHxKnoqSPqp0Enla92wOd1YpmpbYrEy3GK'
    const [detailAddress, setDetailAddress] = useState('')
    const [searchTerm, setSearchTerm] = useState('');
    const [predictions, setPredictions] = useState([])
@@ -22,7 +22,7 @@ const SetAddressSender = ({navigation}) => {
 
    const handleSearch = async (text) => {
       setSearchTerm(text)
-      const apiUrl = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${text}&components=country:VN&key=${API_KEY}`
+      const apiUrl = `https://rsapi.goong.io/Place/AutoComplete?input=${text}&components=country:VN&api_key=${API_KEY}`
       try {
          const response = await fetch(apiUrl);
          const data = await response.json();
@@ -76,9 +76,9 @@ const SetAddressSender = ({navigation}) => {
       setPredictions([])
       try {
          const itemLocate = item.description
-         const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${itemLocate}&key=${API_KEY}`)
+         const response = await axios.get(`https://rsapi.goong.io/Geocode?address=${itemLocate}&api_key=${API_KEY}`)
          const data = response.data
-         // console.log(data)
+         console.log(data)
          if (data.status === 'OK' && data.results.length > 0) {
             setAddress(data.results[0].formatted_address)
             console.log(address)

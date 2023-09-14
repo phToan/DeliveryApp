@@ -14,7 +14,6 @@ import AppContext from '../../Context/AppContext'
 import axios from 'axios'
 
 
-
 const OrderConfirm = ({ route, navigation }) => {
    const [senderName, setSenderName] = useState('')
    const [senderPhone, setSenderPhone] = useState('')
@@ -32,7 +31,13 @@ const OrderConfirm = ({ route, navigation }) => {
    const [point, setPoint] = useState()
    const [usePoint, setUsePoint] = useState(false)
    const [id, setID] = useState('')
-   const { socket } = useContext(AppContext)
+   const { socket, setObject } = useContext(AppContext)
+   const [origin, setOrigin] = useState('')
+   const [destination, setDestination] = useState('')
+
+
+   const apiKey = 'uGwlo6yHxKnoqSPqp0Enla92wOd1YpmpbYrEy3GK'
+
 
    const onClickReturn = () => {
       navigation.navigate('shipmentDetails')
@@ -46,26 +51,18 @@ const OrderConfirm = ({ route, navigation }) => {
       setFastShip(expressShip)
    }
 
-   // const onClickPlaceOrder = () => {
-   //    navigation.navigate('BottomTab', {
-   //       screen: 'Đơn hàng',
-   //       params: { screen: 'Đang chờ', params: { myOrder } }
-   //    })
-   //    socket.emit('placeOrder', myOrder)
-   //    // console.log(myOrder.id)
-   // }
    const onClickPlaceOrder = async () => {
-      // navigation.navigate('Đơn hàng')
-      // console.log(myOrder)
       await axios.post('http://192.168.1.229:5000/order/customer', myOrder)
          .then((res) => {
-            console.log(res.data)
+            if (res.data.err == 0) {
+               navigation.navigate('Đơn hàng', { screen: 'Đang chờ' })
+               socket.emit('placeOrder', { id: myOrder.id })
+            }
          })
          .catch((err) => {
             console.log(err)
          })
    }
-
    const onClickUsePoint = () => {
       setUsePoint(!usePoint)
    }
@@ -90,33 +87,34 @@ const OrderConfirm = ({ route, navigation }) => {
          setDetailAddressSender(await AsyncStorage.getItem('detailAdd'))
          setPoint(parseInt(await AsyncStorage.getItem('point')))
          setID(await AsyncStorage.getItem('id'))
+         setOrigin(await AsyncStorage.getItem('origin'))
+         setDestination(await AsyncStorage.getItem('destination'))
       }
       getData()
-      socket.emit('joinRoom', 'customer');
    }, [])
 
    useFocusEffect(() => {
       const calculateDistance = async () => {
-         // Các thông tin về điểm xuất phát và điểm đến
-         const origin = senderAddress
-         const destination = recieverAddress
-         const apiKey = 'AIzaSyCS-qxrrYUPQH_R_ZfLdHhqlnGSOwtIhRs'
          try {
             const response = await fetch(
-               `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${apiKey}`
+               // `https://rsapi.goong.io/Direction?origin=${origin}&destination=${destination}&vehicle=car&api_key=${apiKey}`
+               `https://rsapi.goong.io/Direction?origin=${origin}&destination=${destination}&vehicle=bike&api_key=${apiKey}`
             );
             const data = await response.json();
-
-            if (data.status === 'OK') {
-               const distanceString = data.routes[0].legs[0].distance.text;
+            // console.log(data.routes[0].legs[0].distance.value)
+            
+            if (data.geocoded_waypoints[0].geocoder_status === 'OK') {
+               const distanceString = data.routes[0].legs[0].distance.value;
                const distance = parseFloat(distanceString);
-               setDistance(distance)
+               setDistance(distance / 1000)
             }
          } catch (error) {
-            console.error('Lỗi 2:', error);
+            console.log('Lỗi 2:', error);
          }
       }
       calculateDistance()
+
+
    })
 
    let cost
@@ -171,7 +169,7 @@ const OrderConfirm = ({ route, navigation }) => {
       infor_shipping: expressShip,
       distance: distance,
       price: tprice,
-      customer_id: id
+      customer_id: id,
    }
 
    return (
@@ -203,13 +201,13 @@ const OrderConfirm = ({ route, navigation }) => {
                         <Text style={{ fontSize: 15, fontWeight: 'bold' }}>Địa chỉ lấy hàng</Text>
                         <Text style={{ fontSize: 15 }}>{senderName} | {senderPhone}</Text>
                         <Text style={{ fontWeight: '500', fontSize: 15 }}>{senderAddress}</Text>
-                        {detailAddressSender.length > 0
+                        {/* {detailAddressSender.length > 0
                            ? <View style={{ borderWidth: 0.3, padding: 3 }}>
                               <Text style={{ fontWeight: '500' }}>Địa chỉ chi tiết: </Text>
                               <Text>{detailAddressSender}</Text>
                            </View>
                            : null
-                        }
+                        } */}
                      </View>
                   </View>
 
@@ -221,13 +219,13 @@ const OrderConfirm = ({ route, navigation }) => {
                         <Text style={{ fontSize: 15, fontWeight: 'bold' }}>Địa chỉ giao hàng</Text>
                         <Text style={{ fontSize: 15 }}>{recieverName} | {recieverPhone}</Text>
                         <Text style={{ fontWeight: '500', fontSize: 15 }}>{recieverAddress}</Text>
-                        {detailAddressReciever.length > 0
+                        {/* {detailAddressReciever.length > 0
                            ? <View style={{ borderWidth: 0.3, padding: 3 }}>
                               <Text style={{ fontWeight: '500' }}>Địa chỉ chi tiết: </Text>
                               <Text>{detailAddressReciever}</Text>
                            </View>
                            : null
-                        }
+                        } */}
                      </View>
                   </View>
                </View>
