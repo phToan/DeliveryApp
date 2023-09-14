@@ -98,7 +98,7 @@ const EditPassword = ({ route }) => {
 
     const updateData = async (data) => {
         let result = 0
-        await axios.put('http://192.168.1.229:5000/customer/password', data)
+        await axios.put('https://delivery-server-s54c.onrender.com/customer/password', data)
             .then((res) => {
                 if (res.data.err == 0) {
                     setErrorMessage('Cập nhật mật khẩu thành công')

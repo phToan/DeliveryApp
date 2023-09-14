@@ -23,7 +23,7 @@ const Detail = ({ route, navigation }) => {
    useEffect(() => {
       const fetchDriver = async () => {
          console.log(item.driver_id)
-         await axios.get('http://192.168.1.229:5000/driver/user', { params: { id: item.driver_id } })
+         await axios.get('https://delivery-server-s54c.onrender.com/driver/user', { params: { id: item.driver_id } })
             .then(res => {
                // if (res.data.err == 0) {
                // navigation.navigate('Đã giao')
@@ -40,7 +40,7 @@ const Detail = ({ route, navigation }) => {
 
 
    const onClickDel = async () => {
-      await axios.put('http://192.168.1.229:5000/order/customer', data)
+      await axios.put('https://delivery-server-s54c.onrender.com/order/customer', data)
          .then((res) => {
             if (res.data.err == 0) {
                navigation.navigate('Đã hủy')

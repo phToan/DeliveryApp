@@ -52,7 +52,7 @@ const OrderConfirm = ({ route, navigation }) => {
    }
 
    const onClickPlaceOrder = async () => {
-      await axios.post('http://192.168.1.229:5000/order/customer', myOrder)
+      await axios.post('https://delivery-server-s54c.onrender.com/order/customer', myOrder)
          .then((res) => {
             if (res.data.err == 0) {
                navigation.navigate('Đơn hàng', { screen: 'Đang chờ' })

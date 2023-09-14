@@ -21,7 +21,7 @@ export const AppProvider = ({ children }) => {
    })
 
    const getSocket = () => {
-      const newSocket = io('http://192.168.1.229:3000',{
+      const newSocket = io('https://socketio-gt82.onrender.com',{
          query: { id, type: 0 }
       })
       setSocket(newSocket);

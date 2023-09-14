@@ -56,7 +56,7 @@ const EditProfile = ({ route, navigation }) => {
    }
 
    const updateData = async (data) => {
-      await axios.put('http://192.168.1.229:5000/customer', data)
+      await axios.put('https://delivery-server-s54c.onrender.com/customer', data)
          .then((res) => {
             if (res.data.err == 0) {
                setIsSuccess(true)

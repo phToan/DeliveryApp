@@ -57,7 +57,7 @@ const Login = () => {
             'Authorization': accessToken
          }
       }
-      await axios.get('http://192.168.61.246:5000/customer', data)
+      await axios.get('https://delivery-server-s54c.onrender.com/customer', data)
       // await axios.get(`${process.env.URL}/customer`, data)
          .then(async(res) => {
             await AsyncStorage.setItem('id',res.data.userData.id.toString())
@@ -71,7 +71,7 @@ const Login = () => {
          })
    }
    const onClickLogin = async () => {
-      await axios.post('http://192.168.61.246:5000/customer/login', data)
+      await axios.post('https://delivery-server-s54c.onrender.com/customer/login', data)
       // await axios.post(`${process.env.URL}/customer/login`, data)
          .then(async (res) => {
             // console.log(res.data.err)

@@ -29,7 +29,7 @@ const Delivery = ({ navigation }) => {
    }, [])
 
    const updateItem = async (payload) => {
-      await axios.put('http://192.168.1.229:5000/order/customer',  payload )
+      await axios.put('https://delivery-server-s54c.onrender.com/order/customer',  payload )
          .then(res => {
             if (res.data.err == 0) {
                navigation.navigate('Đã giao')
@@ -47,7 +47,7 @@ const Delivery = ({ navigation }) => {
 
    const fetchData = async () => {
       try {
-         const response = await axios.get('http://192.168.1.229:5000/order/customer', { params: payload })
+         const response = await axios.get('https://delivery-server-s54c.onrender.com/order/customer', { params: payload })
          setData(response.data.data.rows);
       } catch (error) {
          console.error(error);

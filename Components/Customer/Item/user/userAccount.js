@@ -52,7 +52,7 @@ const UserAccount = ({navigation}) => {
         const data = {
             refresh_token: refreshToken
         }
-        await axios.post('http://192.168.1.229:5000/customer/refresh_token', data)
+        await axios.post('https://delivery-server-s54c.onrender.com/customer/refresh_token', data)
             .then(async (res) => {
                 if (res.data.err == 0) {
                     await AsyncStorage.setItem('access_token', res.data.access_token)
@@ -73,7 +73,7 @@ const UserAccount = ({navigation}) => {
                 'Authorization': accessToken
             }
         }
-        await axios.get('http://192.168.1.229:5000/customer', data)
+        await axios.get('https://delivery-server-s54c.onrender.com/customer', data)
             .then(async (res) => {
                 await AsyncStorage.setItem('name', res.data.userData.name)
                 await AsyncStorage.setItem('dob', res.data.userData.dob)

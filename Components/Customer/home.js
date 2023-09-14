@@ -53,7 +53,7 @@ const Home = ({ navigation }) => {
             console.log(error.message)
          }
       })()
-   },[])
+   })
 
    useEffect(() => {
       const renderMap = async () => {

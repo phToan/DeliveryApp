@@ -26,7 +26,7 @@ const Confirm = ({route, navigation}) =>{
 
    const fetchData = async () => {
       try {
-         const response = await axios.get('http://192.168.1.229:5000/order/customer', { params: payload })
+         const response = await axios.get('https://delivery-server-s54c.onrender.com/order/customer', { params: payload })
          setData(response.data.data.rows);
       } catch (error) {
          console.error(error);
