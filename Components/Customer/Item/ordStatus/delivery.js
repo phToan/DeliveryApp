@@ -80,7 +80,7 @@ const Delivery = ({ navigation }) => {
             </View>
             <View style={{ flexDirection: 'row', marginHorizontal:20}}>
                <Icon name='location-on' size={20}/>
-               <Text style={{marginLeft:10}}>{item.sender_address}</Text>
+               <Text style={{marginLeft:10}}>{item.receiver_address}</Text>
             </View>
          </TouchableOpacity>
       )

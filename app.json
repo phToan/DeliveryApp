@@ -16,17 +16,21 @@
     ],
     "ios": {
       "supportsTablet": true
-     
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
-   
+      },
+      "package": "com.phtoan.DeliveryApp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "f1fead76-bf3b-46e1-a804-42bedf065b22"
+      }
     }
   }
 }

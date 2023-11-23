@@ -67,7 +67,7 @@ const Detail = ({ route, navigation }) => {
    const status = () => {
       if (route?.params.status == 1) {
          return (
-            item.driver_idv != 0 ?
+            item.driver_id != 0 ?
                <View>
                   <Text style={styles.t_status}>Tài xế đang đến địa điểm lấy hàng</Text>
                   <Text style={{ color: 'white', marginTop: 5 }}>Vui lòng chờ trong vài phút!</Text>

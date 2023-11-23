@@ -53,49 +53,49 @@ const Register = () => {
       gender: gender,
       password: password
    }
-   const onClickContinue = async() => {
+   const onClickContinue = async () => {
       //   navigation.navigate('pass',{data})
       // await axios.post('http://192.168.1.229:5000/customer/register',data)
       await axios.post('https://delivery-server-s54c.onrender.com/customer/register', data)
-      .then( async(res) =>{          
-         if(res.data.err == 0){
-            await AsyncStorage.setItem('refresh_token',res.data.refresh_token)
-            await AsyncStorage.setItem('access_token',res.data.access_token)
-            navigation.navigate('BottomTab')
-            await getDatabase()
-         }else if(res.data.err == 1){
-            ToastAndroid.show('Tài khoản đã tồn tại !', ToastAndroid.LONG)
-            navigation.popToTop()
-         }else{
-            ToastAndroid.show('Đăng ký không thành công !', ToastAndroid.LONG)
-            navigation.popToTop()
-         }
-      })
-      .catch(err =>{
-         console.log(err)
-      })
+         .then(async (res) => {
+            if (res.data.err == 0) {
+               await AsyncStorage.setItem('refresh_token', res.data.refresh_token)
+               await AsyncStorage.setItem('access_token', res.data.access_token)
+               navigation.navigate('BottomTab')
+               await getDatabase()
+            } else if (res.data.err == 1) {
+               ToastAndroid.show('Tài khoản đã tồn tại !', ToastAndroid.LONG)
+               navigation.popToTop()
+            } else {
+               ToastAndroid.show('Đăng ký không thành công !', ToastAndroid.LONG)
+               navigation.popToTop()
+            }
+         })
+         .catch(err => {
+            console.log(err)
+         })
    }
 
    const getDatabase = async () => {
       const accessToken = await AsyncStorage.getItem('access_token')
       const data = {
-          headers: {
-              'Authorization': accessToken
-          }
+         headers: {
+            'Authorization': accessToken
+         }
       }
       await axios.get('https://delivery-server-s54c.onrender.com/customer', data)
-          .then(async (res) => {
-              await AsyncStorage.setItem('id', res.data.userData.id.toString())
-              await AsyncStorage.setItem('name', res.data.userData.name)
-              await AsyncStorage.setItem('dob', res.data.userData.dob)
-              await AsyncStorage.setItem('gender', JSON.stringify(res.data.userData.gender))
-              await AsyncStorage.setItem('phone', res.data.userData.phone)
-              await AsyncStorage.setItem('point', res.data.userData.point.toString())
-          })
-          .catch((err) => {
-              console.log(err)
-          })
-  }
+         .then(async (res) => {
+            await AsyncStorage.setItem('id', res.data.userData.id.toString())
+            await AsyncStorage.setItem('name', res.data.userData.name)
+            await AsyncStorage.setItem('dob', res.data.userData.dob)
+            await AsyncStorage.setItem('gender', JSON.stringify(res.data.userData.gender))
+            await AsyncStorage.setItem('phone', res.data.userData.phone)
+            await AsyncStorage.setItem('point', res.data.userData.point.toString())
+         })
+         .catch((err) => {
+            console.log(err)
+         })
+   }
 
    const setLength = (text, setValid) => {
       if (text.length == 0) {
@@ -254,7 +254,7 @@ const Register = () => {
                <View style={[styles._input_pass, { borderColor: isValidPass ? 'black' : 'red', }]}>
                   <View style={{ width: '90%' }}>
                      {label(password, 'Mật khẩu')}
-                     {textInput('default', 'Nhập mật khẩu', password, setPassword, verifyPassword, setValidPass, setLength, false,hidePass ? true : false)}
+                     {textInput('default', 'Nhập mật khẩu', password, setPassword, verifyPassword, setValidPass, setLength, false, hidePass ? true : false)}
                   </View>
                   <TouchableOpacity onPress={onClickEye}>
                      <Icon name={hidePass ? 'eye-slash' : 'eye'} color='lightslategray' size={20} />

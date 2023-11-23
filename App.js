@@ -29,7 +29,6 @@ export default function App() {
         }}>
           <Stack.Screen name='Login' component={Login} />
           <Stack.Screen name='Register' component={Register} />
-
           <Stack.Screen name='BottomTab' component={BottomTab} />
           <Stack.Screen name='detailedAddressSender' component={DetailedAddress} />
           <Stack.Screen name='placeDelivery' component={PlaceDelivery} />

@@ -65,6 +65,7 @@ const Login = () => {
             await AsyncStorage.setItem('dob',res.data.userData.dob)
             await AsyncStorage.setItem('gender',JSON.stringify(res.data.userData.gender))
             await AsyncStorage.setItem('phone',res.data.userData.phone)
+            await AsyncStorage.setItem('point', JSON.stringify(res.data.userData.point))
          })
          .catch((err) => {
             console.log(err)

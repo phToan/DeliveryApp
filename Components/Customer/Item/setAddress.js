@@ -29,6 +29,9 @@ const SetAddressSender = ({navigation}) => {
          if (data.predictions) {
             setPredictions(data.predictions);
          }
+         if(text.length == 0){
+            setPredictions([])
+         }
       } catch (error) {
          console.error(error);
       }

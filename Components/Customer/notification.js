@@ -31,7 +31,6 @@ const Notification = ({navigation}) => {
                 }}>
                 <View style={{
                     flexDirection: 'row',
-                    
                 }}>
                     <View style={{
                         borderRadius: 100,

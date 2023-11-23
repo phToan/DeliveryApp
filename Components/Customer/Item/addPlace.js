@@ -13,7 +13,7 @@ const AddAddress = () => {
    const [nameReceiver, setNameReciever] = useState('')
    const [address, setAddress] = useState('Địa chỉ')
    const onClickReturn = () => {
-      navigation.navigate('savedPlace')   
+      navigation.goBack()   
    }
    
 
@@ -21,7 +21,7 @@ const AddAddress = () => {
 
    }
    const savedPlace = () => {
-      navigation.navigate('savedPlace')
+      navigation.goBack()
    }
    const validSavedPlace =() => namePlace.length > 0 && address === 'Địa chỉ'
    return (

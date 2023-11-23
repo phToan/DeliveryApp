@@ -31,7 +31,7 @@ const OrderConfirm = ({ route, navigation }) => {
    const [point, setPoint] = useState()
    const [usePoint, setUsePoint] = useState(false)
    const [id, setID] = useState('')
-   const { socket, setObject } = useContext(AppContext)
+   const { socket } = useContext(AppContext)
    const [origin, setOrigin] = useState('')
    const [destination, setDestination] = useState('')
 
@@ -93,16 +93,14 @@ const OrderConfirm = ({ route, navigation }) => {
       getData()
    }, [])
 
-   useFocusEffect(() => {
+   useEffect(() => {
       const calculateDistance = async () => {
          try {
             const response = await fetch(
-               // `https://rsapi.goong.io/Direction?origin=${origin}&destination=${destination}&vehicle=car&api_key=${apiKey}`
                `https://rsapi.goong.io/Direction?origin=${origin}&destination=${destination}&vehicle=bike&api_key=${apiKey}`
             );
             const data = await response.json();
             // console.log(data.routes[0].legs[0].distance.value)
-            
             if (data.geocoded_waypoints[0].geocoder_status === 'OK') {
                const distanceString = data.routes[0].legs[0].distance.value;
                const distance = parseFloat(distanceString);
@@ -113,9 +111,7 @@ const OrderConfirm = ({ route, navigation }) => {
          }
       }
       calculateDistance()
-
-
-   })
+   },[origin.length > 0, destination.length > 0])
 
    let cost
    if (!expressShip) {

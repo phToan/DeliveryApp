@@ -11,7 +11,6 @@ export const AppProvider = ({ children }) => {
    const [socket, setSocket] = useState(null);
    const [address, setAddress] = useState('')
    const [isUpdate, setUpdate] = useState(false)
-   const [object, setObject] = useState({})
    const [orderID, setOrderID] = useState('')
    React.useEffect(() => {
       const getId = async() =>{
@@ -21,8 +20,8 @@ export const AppProvider = ({ children }) => {
    })
 
    const getSocket = () => {
-      const newSocket = io('https://socketio-gt82.onrender.com',{
-         query: { id, type: 0 }
+      const newSocket = io('http://192.168.61.86:3000',{
+         query: { id, type: 0, joinRoom: 'customer' }
       })
       setSocket(newSocket);
       socket.on('connect', () => {
@@ -47,7 +46,6 @@ export const AppProvider = ({ children }) => {
          address, setAddress,
          reload, setReload,
          isUpdate, setUpdate,
-         object, setObject,
          orderID, setOrderID
       }}>
          {children}

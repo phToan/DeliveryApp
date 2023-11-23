@@ -12,22 +12,15 @@ const Waiting = ({ navigation }) => {
    const [data, setData] = useState([])
    const { socket, orderID, setOrderID } = useContext(AppContext)
    const [id, setID] = useState('')
-   const [driverID, setDriverID] = useState('')
    const isFocused = useIsFocused();
-   const [array, setArray] = useState([])
-   const [object, setObject] = useState({})
-   // let array = []
-
    const [refreshing, setRefreshing] = useState(false);
 
    const handleRefresh = () => {
-     // Đặt refreshing thành true để bắt đầu quá trình làm mới
      setRefreshing(true);
-     // Thực hiện các thao tác làm mới dữ liệu ở đây (fetch dữ liệu mới, xử lý, vv.)
      fetchData()
-     // Sau khi hoàn thành, đặt refreshing lại thành false để kết thúc quá trình làm mới
      setRefreshing(false);
    };
+
    useEffect(() => {
       if (socket) {
          socket.on('orderTaken', (value) => {
@@ -36,14 +29,14 @@ const Waiting = ({ navigation }) => {
             // AsyncStorage.setItem('objDriver', JSON.stringify(value))
             // navigation.navigate('Đang giao')
             // navigation.navigate('Đang chờ')
-            fetchData()
+            // fetchData()
          })
          socket.on('orderTakenSuccess', (value) => {
             navigation.navigate('Đang giao')
          })
          socket.on('cancle-order-driver', (value) => {
             // navigation.navigate('Đang chờ')
-            fetchData()
+            // fetchData()
          })
       }
       const getData = async () => {
@@ -72,16 +65,6 @@ const Waiting = ({ navigation }) => {
       }
    }, [isFocused]);
 
-   // useEffect(() => {
-   //    fetchData()
-   // }, [])
-
-   const Check = (item) => {
-      const isCheck = array.some((e) => e.order_id === item.id)
-      // console.log(isCheck)
-      return isCheck
-   }
-
    const itemView = ({ item }) => {
       const isExpress = item.infor_shipping
       return (
@@ -102,7 +85,7 @@ const Waiting = ({ navigation }) => {
             </View>
             <View style={{ flexDirection: 'row', marginHorizontal: 20 }}>
                <Icon name='location-on' size={20} />
-               <Text style={{ marginLeft: 10 }}>{item.sender_address}</Text>
+               <Text style={{ marginLeft: 10 }}>{item.receiver_address}</Text>
             </View>
             {item.driver_id != 0 ?
                <View style={{ flexDirection: 'row', marginTop: 5, marginHorizontal: 20, alignItems: 'flex-end' }}>
