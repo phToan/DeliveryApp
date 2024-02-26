@@ -1,12 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit'
-import counterSlice from './Reducers/counterSlice'
 import senderSlice from './Reducers/senderSlice'
 import receiverSlice from './Reducers/receiverSlice'
+import userInforSlice from './Reducers/userInforSlice'
 
 export const store = configureStore({
     reducer: {
-        counter: counterSlice,
         senderSlice,
-        receiverSlice
+        receiverSlice,
+        userInforSlice
     },
 })

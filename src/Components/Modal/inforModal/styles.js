@@ -9,37 +9,60 @@ export const styles = StyleSheet.create({
         // alignItems: 'center'
     },
     body: {
-        width: '100%',
         paddingHorizontal: 20,
-        paddingVertical: 10,
         backgroundColor: "white",
         borderRadius: 10,
-        alignItems: 'center',
+        flex: 5
     },
     map: {
-        height: '15%',
+        flex: 1,
         width: '100%',
         backgroundColor: 'blue'
     },
     message: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: 'black'
+        color: 'black',
+        padding: 20
     },
     message_body: {
-        fontSize: 16,
-        textAlign: 'center'
+        textAlign: 'center',
+        borderWidth: 0.6,
+        borderRadius: 10,
+        paddingVertical: 15,
+        paddingHorizontal: 10,
     },
     bt_ok: {
-        width: '100%',
-        backgroundColor: color.orange,
-        borderRadius: 20,
-        paddingVertical: 5,
-        paddingHorizontal: 20,
-        marginTop: 15
+        borderRadius: 40,
+        paddingVertical: 15,
+        marginHorizontal: 20
     },
     bt_title: {
         fontSize: 18,
-        color: "white"
+        color: "white",
+        textAlign: 'center',
+        fontWeight: 'bold'
+    },
+    label_title: {
+        fontSize: 16,
+        color: 'black',
+        fontWeight: '500',
+        marginBottom: 10
+    },
+    save: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginVertical: 20
+    },
+    saveTitle: {
+        fontSize: 16,
+        fontWeight: '500',
+        color: 'black'
+    },
+    footer: {
+        flex: 0.8,
+        justifyContent: 'center'
     }
+
 })

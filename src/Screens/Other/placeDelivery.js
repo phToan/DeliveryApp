@@ -56,6 +56,8 @@ const PlaceDelivery = ({ navigation }) => {
             if (data.results && data.results.length > 0) {
                const { lat, lng } = data.results[0].geometry.location;
                await AsyncStorage.setItem('destination', `${lat},${lng}`)
+               await AsyncStorage.setItem('destination_lat', `${lat}`)
+               await AsyncStorage.setItem('destination_long', `${lng}`)
             } else {
                console.error('Không thể lấy được toạ độ từ địa chỉ');
             }

@@ -4,7 +4,8 @@ const initialState = {
     address: "",
     name: "",
     phone: "",
-    detailAddress: ""
+    detailAddress: "",
+    point: 10
 }
 
 export const inforSender = createSlice({

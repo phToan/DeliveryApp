@@ -1,4 +1,4 @@
-import { View, SafeAreaView, Text, Image, TouchableOpacity, TextInput, StyleSheet, ImageBackground, ScrollView } from 'react-native'
+import { View, SafeAreaView, Text, Image, StatusBar, TouchableOpacity, TextInput, StyleSheet, ImageBackground, ScrollView } from 'react-native'
 import React, { useState } from 'react'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import Icon2 from 'react-native-vector-icons/Entypo'
@@ -10,6 +10,7 @@ import axios from 'axios'
 import AppContext from '../../Context/AppContext'
 import { styles } from './styles'
 import { senderName, senderPhone } from '../../Redux/Reducers/senderSlice'
+import { changeDob, changeGender, changeName, changeID, changePhone, changePoint } from '../../Redux/Reducers/userInforSlice'
 import { useDispatch } from 'react-redux'
 
 import * as NameScreen from '../../Constants/NameScreen'
@@ -72,6 +73,12 @@ const Login = () => {
             await AsyncStorage.setItem('gender', JSON.stringify(res.data.userData.gender))
             await AsyncStorage.setItem('phone', res.data.userData.phone)
             await AsyncStorage.setItem('point', JSON.stringify(res.data.userData.point))
+            dispatch(changeID(res.data.userData.id))
+            dispatch(changeName(res.data.userData.name))
+            dispatch(changeDob(res.data.userData.dob))
+            dispatch(changeGender(res.data.userData.gender))
+            dispatch(changePhone(res.data.userData.phone))
+            dispatch(changePoint(res.data.userData.point))
             dispatch(senderName(res.data.userData.name))
             dispatch(senderPhone(res.data.userData.phone))
          })
@@ -133,6 +140,7 @@ const Login = () => {
    return (
       <SafeAreaView style={{ backgroundColor: 'white' }}>
          <SysModal onHide={onHideModal} Visible={showModal} Message={errorMessage} />
+         <StatusBar backgroundColor="orange" />
          <ScrollView>
             <Image source={require('../../Assets/Image/ghn1.jpg')} style={styles.header} />
             <Text style={styles.t_header}>ĐĂNG NHẬP</Text>

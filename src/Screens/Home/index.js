@@ -38,6 +38,8 @@ const Home = ({ navigation }) => {
             }
             let location = await Location.getCurrentPositionAsync();
             await AsyncStorage.setItem('origin', `${location.coords.latitude},${location.coords.longitude}`)
+            await AsyncStorage.setItem('origin_lat', `${location.coords.latitude}`)
+            await AsyncStorage.setItem('origin_long', `${location.coords.longitude}`)
             try {
                 const response = await axios.get(
                     `https://rsapi.goong.io/Geocode?latlng=${location.coords.latitude},${location.coords.longitude}&api_key=${API_KEY_GEOCODE}`

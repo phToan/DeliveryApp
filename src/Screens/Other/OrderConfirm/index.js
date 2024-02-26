@@ -1,34 +1,36 @@
-import React, { useState, useEffect, useContext, useMemo, memo } from 'react'
-import { View, SafeAreaView, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView } from 'react-native'
+import React, { useState, useEffect, useContext, useMemo, useCallback } from 'react'
+import { View, SafeAreaView, Text, TouchableOpacity, TextInput, ScrollView } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import AppContext from '../../../Context/AppContext'
 import axios from 'axios'
-import { AntDesign, Entypo, FontAwesome, FontAwesome5, MaterialIcons, Fontisto, MaterialCommunityIcons, Octicons } from '../../../Assets/icon'
+import { FontAwesome5, MaterialIcons, Fontisto, MaterialCommunityIcons } from '../../../Assets/icon'
 import { TAB_SCREEN } from '../../../Constants/NameScreen'
 import { useSelector } from 'react-redux'
 import { styles } from './styles'
 import SysModal from '../../../Components/Modal/SysModal'
 import InforModal from '../../../Components/Modal/inforModal/index'
-
 import { Header } from '../../../Components/Header'
+import { inforSender as Infor, TransportMethod } from '../../../Components/OrderConfirm'
 
 
 const OrderConfirm = ({ navigation }) => {
    const [orderInfor, setOrderInfor] = useState('')
    const [orderDescription, setOrderDescription] = useState(true)
    const [distance, setDistance] = useState('')
-   const [fastShip, setFastShip] = useState(true)
+   const [fastShip, setFastShip] = useState(false)
    const [expressShip, setExpressShip] = useState(false)
    const [point, setPoint] = useState()
    const [usePoint, setUsePoint] = useState(false)
    const [id, setID] = useState('')
    const { socket } = useContext(AppContext)
    const [showModal, setShowModal] = useState(false)
-
-   const [te, setTe] = useState(1)
-
-   console.log('re-render CHA ')
-
+   const [latOrigin, setLatOrigin] = useState(null)
+   const [lngOrigin, setLngOrigin] = useState(null)
+   const [latDestination, setLatDestination] = useState(null)
+   const [lngDestination, setLngDestination] = useState(null)
+   const [region, setRegion] = useState(null)
+   const [regionDes, setRegionDes] = useState(null)
+   const [showModalReceiver, setShowModalReceiver] = useState(false)
    const senderAddress = useSelector((state) => state.senderSlice.address)
    const receiverAddress = useSelector((state) => state.receiverSlice.address)
    const senderName = useSelector((state) => state.senderSlice.name)
@@ -40,18 +42,17 @@ const OrderConfirm = ({ navigation }) => {
 
    const apiKey = 'uGwlo6yHxKnoqSPqp0Enla92wOd1YpmpbYrEy3GK'
 
-   const onClickReturn = () => {
+   const onClickReturn = useCallback(() => {
       navigation.navigate(TAB_SCREEN)
-
-   }
-   const onClickFast = () => {
+   }, [])
+   const onClickFast = useCallback(() => {
       setFastShip(!fastShip)
       setExpressShip(fastShip)
-   }
-   const onClickExpress = () => {
+   }, [])
+   const onClickExpress = useCallback(() => {
       setExpressShip(!expressShip)
       setFastShip(expressShip)
-   }
+   }, [])
 
    const onClickPlaceOrder = async () => {
       await axios.post('https://delivery-server-s54c.onrender.com/order/customer', myOrder)
@@ -67,14 +68,28 @@ const OrderConfirm = ({ navigation }) => {
    }
 
    const onClickUsePoint = () => {
-      // setUsePoint(!usePoint)
-      setTe(e => e + 1)
-      console.log(te)
+      setUsePoint(!usePoint)
    }
 
    const getData = async () => {
       setPoint(parseInt(await AsyncStorage.getItem('point')))
       setID(await AsyncStorage.getItem('id'))
+      setLatOrigin(await AsyncStorage.getItem('origin_lat'))
+      setLngOrigin(await AsyncStorage.getItem('origin_long'))
+      setLatDestination(await AsyncStorage.getItem('destination_lat'))
+      setLngDestination(await AsyncStorage.getItem('destination_long'))
+      setRegion({
+         latitude: latOrigin,
+         longitude: lngOrigin,
+         latitudeDelta: 0.001,
+         longitudeDelta: 0.001,
+      })
+      setRegionDes({
+         latitude: latDestination,
+         longitude: lngDestination,
+         latitudeDelta: 0.001,
+         longitudeDelta: 0.001,
+      })
    }
 
    const calculateDistance = async () => {
@@ -141,23 +156,60 @@ const OrderConfirm = ({ navigation }) => {
       setOrderInfor(text)
    }
 
-   const onPressInforSender = () => {
+   const onPressInforSender = useCallback(() => {
       setShowModal(true)
-   }
+   }, [])
 
+   const onPressInforReceiver = useCallback(() => {
+      setShowModalReceiver(true)
+   }, [])
 
-
-   const onHideModal = () => {
+   const onHideModal = useCallback(() => {
       setShowModal(false)
+   }, [])
+
+   const onHideModalReceiver = useCallback(() => {
+      setShowModalReceiver(false)
+   }, [])
+
+   const calculateDelta = () => {
+      const LATITUDE_DELTA = 0.009
+      const LONGITUDE_DELTA = 0.009
+      return {
+         latitudeDelta: LATITUDE_DELTA,
+         longitudeDelta: LONGITUDE_DELTA,
+      }
    }
 
 
 
    return (
       <SafeAreaView style={{ flex: 1 }}>
-         <InforModal address={senderAddress} name={senderName} phone={senderPhone} onHide={onHideModal} visible={showModal} />
-         <Header />
+         <InforModal
+            title={'người gửi'}
+            address={senderAddress}
+            name={senderName}
+            phone={senderPhone}
+            onHide={onHideModal}
+            visible={showModal}
+            calculateDelta={calculateDelta}
+            latitude={latOrigin}
+            longitude={lngOrigin}
+            region={region}
+         />
+         <InforModal
+            title={'người nhận'}
+            address={receiverAddress}
+            name={receiverName}
+            phone={receiverPhone}
+            onHide={onHideModalReceiver}
+            visible={showModalReceiver}
+            calculateDelta={calculateDelta}
+            latitude={latDestination}
+            longitude={lngDestination}
+            region={regionDes} />
 
+         <Header onClickReturn={onClickReturn} />
          <View style={{ flex: 14 }}>
             <ScrollView>
                <View style={styles.route}>
@@ -168,28 +220,22 @@ const OrderConfirm = ({ navigation }) => {
                      </View>
                   </View>
 
-                  <View style={[styles.sender, { borderColor: '#2299ba' }]}>
-                     <Entypo name='location' size={25} color={'#2299ba'} style={{ flex: 1 }} />
-                     <TouchableOpacity style={styles.infor} onPress={onPressInforSender}>
-                        <Text style={styles.infor_title}>Thông tin người gửi </Text>
-                        <Text style={styles.infor_address}>{senderAddress}</Text>
-                        <Text style={{ fontSize: 15 }}>{senderName}  <Octicons name='dot-fill' size={12} />  {senderPhone}</Text>
-                     </TouchableOpacity>
-                  </View>
-
-                  <View style={[styles.sender, { borderColor: 'red' }]}>
-                     <FontAwesome name='location-arrow' size={25} color={'red'} style={{ flex: 1 }} />
-                     <View style={styles.infor}>
-                        <Text style={[styles.infor_title, { color: 'red' }]}>Thông tin người nhận</Text>
-                        <Text style={styles.infor_address}>{receiverAddress}</Text>
-                        {receiverName === '' ?
-                           <Text style={styles.infor_blank}>Thêm thông tin người nhận <Text style={styles.star}>*</Text></Text>
-                           :
-                           <Text style={{ fontSize: 15 }}>{receiverName}  <Octicons name='dot-fill' size={12} />  {receiverPhone}</Text>
-                        }
-
-                     </View>
-                  </View>
+                  <Infor
+                     iconColor={'#2299ba'}
+                     iconName={'location-pin'}
+                     title={'người gửi'}
+                     name={senderName}
+                     address={senderAddress}
+                     phone={senderPhone}
+                     onPress={onPressInforSender} />
+                  <Infor
+                     iconColor={'red'}
+                     iconName={'my-location'}
+                     title={'người nhận'}
+                     name={receiverName}
+                     address={receiverAddress}
+                     phone={receiverPhone}
+                     onPress={onPressInforReceiver} />
                </View>
 
                <View style={styles.order}>
@@ -210,20 +256,19 @@ const OrderConfirm = ({ navigation }) => {
 
                <View style={styles.method}>
                   <Text style={styles.t_method}>Phương thức vận chuyển</Text>
-                  <TouchableOpacity style={styles.express} onPress={onClickExpress}>
-                     <FontAwesome name={expressShip ? 'check-square-o' : 'square-o'} size={20} color={'green'} />
-                     <View style={{ marginHorizontal: 10 }}>
-                        <Text style={{ fontWeight: '600' }}>Hỏa tốc</Text>
-                        <Text style={{ marginBottom: 5 }}>Nhận hàng trong khoảng 1h</Text>
-                     </View>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.save} onPress={onClickFast}>
-                     <FontAwesome name={fastShip ? 'check-square-o' : 'square-o'} size={20} color={'green'} />
-                     <View style={{ marginHorizontal: 10 }}>
-                        <Text style={{ fontWeight: '600' }}>Tiết kiệm</Text>
-                        <Text >Nhận hàng trong khoảng từ 2h - 5h</Text>
-                     </View>
-                  </TouchableOpacity>
+
+                  <TransportMethod
+                     title={'Hỏa tốc'}
+                     expressShip={expressShip}
+                     onPress={onClickExpress}
+                     secondTitle={'Nhận hàng trong khoảng 1h'} />
+
+                  <TransportMethod
+                     title={'Tiết kiệm'}
+                     expressShip={fastShip}
+                     onPress={onClickFast}
+                     secondTitle={'Nhận hàng trong khoảng từ 2h - 5h'} />
+
                </View>
 
                <View style={styles.point}>
