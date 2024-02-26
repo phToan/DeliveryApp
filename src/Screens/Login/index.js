@@ -140,7 +140,7 @@ const Login = () => {
    return (
       <SafeAreaView style={{ backgroundColor: 'white' }}>
          <SysModal onHide={onHideModal} Visible={showModal} Message={errorMessage} />
-         <StatusBar backgroundColor="orange" />
+         {/* <StatusBar backgroundColor="orange" /> */}
          <ScrollView>
             <Image source={require('../../Assets/Image/ghn1.jpg')} style={styles.header} />
             <Text style={styles.t_header}>ĐĂNG NHẬP</Text>

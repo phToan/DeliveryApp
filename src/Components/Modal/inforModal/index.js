@@ -40,6 +40,9 @@ const inforModal = ({
         setSave(!save)
     }
 
+    console.log('lang: ', latitude)
+    console.log('name: ', name)
+
     const validate = userName.length > 0 && phoneNumber.length > 0
 
     return (

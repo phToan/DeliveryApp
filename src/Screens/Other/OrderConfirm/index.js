@@ -1,14 +1,12 @@
-import React, { useState, useEffect, useContext, useMemo, useCallback } from 'react'
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { View, SafeAreaView, Text, TouchableOpacity, TextInput, ScrollView } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import AppContext from '../../../Context/AppContext'
 import axios from 'axios'
 import { FontAwesome5, MaterialIcons, Fontisto, MaterialCommunityIcons } from '../../../Assets/icon'
-import { TAB_SCREEN } from '../../../Constants/NameScreen'
+import { TAB_SCREEN, INFOR_CONFIRM } from '../../../Constants/NameScreen'
 import { useSelector } from 'react-redux'
 import { styles } from './styles'
 import SysModal from '../../../Components/Modal/SysModal'
-import InforModal from '../../../Components/Modal/inforModal/index'
 import { Header } from '../../../Components/Header'
 import { inforSender as Infor, TransportMethod } from '../../../Components/OrderConfirm'
 
@@ -19,18 +17,12 @@ const OrderConfirm = ({ navigation }) => {
    const [distance, setDistance] = useState('')
    const [fastShip, setFastShip] = useState(false)
    const [expressShip, setExpressShip] = useState(false)
-   const [point, setPoint] = useState()
    const [usePoint, setUsePoint] = useState(false)
-   const [id, setID] = useState('')
-   const { socket } = useContext(AppContext)
-   const [showModal, setShowModal] = useState(false)
    const [latOrigin, setLatOrigin] = useState(null)
    const [lngOrigin, setLngOrigin] = useState(null)
    const [latDestination, setLatDestination] = useState(null)
    const [lngDestination, setLngDestination] = useState(null)
-   const [region, setRegion] = useState(null)
-   const [regionDes, setRegionDes] = useState(null)
-   const [showModalReceiver, setShowModalReceiver] = useState(false)
+
    const senderAddress = useSelector((state) => state.senderSlice.address)
    const receiverAddress = useSelector((state) => state.receiverSlice.address)
    const senderName = useSelector((state) => state.senderSlice.name)
@@ -39,6 +31,8 @@ const OrderConfirm = ({ navigation }) => {
    const receiverPhone = useSelector((state) => state.receiverSlice.phone)
    const detailAddressSender = useSelector((state) => state.senderSlice.detailAddress)
    const detailAddressReciever = useSelector((state) => state.receiverSlice.detailAddress)
+   const point = useSelector((state) => state.userInforSlice.point)
+   const id = useSelector((state) => state.userInforSlice.id)
 
    const apiKey = 'uGwlo6yHxKnoqSPqp0Enla92wOd1YpmpbYrEy3GK'
 
@@ -59,7 +53,7 @@ const OrderConfirm = ({ navigation }) => {
          .then((res) => {
             if (res.data.err == 0) {
                navigation.navigate('Đơn hàng', { screen: 'Đang chờ' })
-               socket.emit('placeOrder', { id: myOrder.id })
+               // socket.emit('placeOrder', { id: myOrder.id })
             }
          })
          .catch((err) => {
@@ -72,24 +66,10 @@ const OrderConfirm = ({ navigation }) => {
    }
 
    const getData = async () => {
-      setPoint(parseInt(await AsyncStorage.getItem('point')))
-      setID(await AsyncStorage.getItem('id'))
       setLatOrigin(await AsyncStorage.getItem('origin_lat'))
       setLngOrigin(await AsyncStorage.getItem('origin_long'))
       setLatDestination(await AsyncStorage.getItem('destination_lat'))
       setLngDestination(await AsyncStorage.getItem('destination_long'))
-      setRegion({
-         latitude: latOrigin,
-         longitude: lngOrigin,
-         latitudeDelta: 0.001,
-         longitudeDelta: 0.001,
-      })
-      setRegionDes({
-         latitude: latDestination,
-         longitude: lngDestination,
-         latitudeDelta: 0.001,
-         longitudeDelta: 0.001,
-      })
    }
 
    const calculateDistance = async () => {
@@ -156,63 +136,38 @@ const OrderConfirm = ({ navigation }) => {
       setOrderInfor(text)
    }
 
-   const onPressInforSender = useCallback(() => {
-      setShowModal(true)
-   }, [])
-
-   const onPressInforReceiver = useCallback(() => {
-      setShowModalReceiver(true)
-   }, [])
-
-   const onHideModal = useCallback(() => {
-      setShowModal(false)
-   }, [])
-
-   const onHideModalReceiver = useCallback(() => {
-      setShowModalReceiver(false)
-   }, [])
-
-   const calculateDelta = () => {
-      const LATITUDE_DELTA = 0.009
-      const LONGITUDE_DELTA = 0.009
-      return {
-         latitudeDelta: LATITUDE_DELTA,
-         longitudeDelta: LONGITUDE_DELTA,
-      }
+   const onPressInforSender = () => {
+      navigation.navigate(INFOR_CONFIRM, {
+         id: 1,
+         title: 'người gửi',
+         address: senderAddress,
+         name: senderName,
+         phone: senderPhone,
+         latitude: latOrigin,
+         longitude: lngOrigin,
+      })
    }
 
-
+   const onPressInforReceiver = () => {
+      navigation.navigate(INFOR_CONFIRM, {
+         id: 2,
+         title: 'người nhận',
+         address: receiverAddress,
+         name: receiverName,
+         phone: receiverPhone,
+         latitude: latDestination,
+         longitude: lngDestination,
+      })
+   }
 
    return (
       <SafeAreaView style={{ flex: 1 }}>
-         <InforModal
-            title={'người gửi'}
-            address={senderAddress}
-            name={senderName}
-            phone={senderPhone}
-            onHide={onHideModal}
-            visible={showModal}
-            calculateDelta={calculateDelta}
-            latitude={latOrigin}
-            longitude={lngOrigin}
-            region={region}
-         />
-         <InforModal
-            title={'người nhận'}
-            address={receiverAddress}
-            name={receiverName}
-            phone={receiverPhone}
-            onHide={onHideModalReceiver}
-            visible={showModalReceiver}
-            calculateDelta={calculateDelta}
-            latitude={latDestination}
-            longitude={lngDestination}
-            region={regionDes} />
 
          <Header onClickReturn={onClickReturn} />
          <View style={{ flex: 14 }}>
             <ScrollView>
                <View style={styles.route}>
+
                   <View style={styles._route_header}>
                      <View style={styles.distance}>
                         <Text style={styles.distance_title}>Lộ trình: </Text>

@@ -4,7 +4,8 @@ const initialState = {
     address: "",
     name: "",
     phone: "",
-    detailAddress: ""
+    homeNumber: "",
+    note: ""
 }
 
 export const inforReceiver = createSlice({
@@ -20,11 +21,20 @@ export const inforReceiver = createSlice({
         receiverPhone: (state, action) => {
             state.phone = action.payload
         },
-        detailAddress: (state, action) => {
-            state.detailAddress = action.payload
+        homeNumber: (state, action) => {
+            state.homeNumber = action.payload
+        },
+        note: (state, action) => {
+            state.note = action.payload
         }
     }
 })
 
-export const { receiverAddress, receiverName, receiverPhone } = inforReceiver.actions
+export const {
+    receiverAddress,
+    receiverName,
+    receiverPhone,
+    homeNumber,
+    note
+} = inforReceiver.actions
 export default inforReceiver.reducer

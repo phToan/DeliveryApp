@@ -9,7 +9,7 @@ import axios from 'axios';
 import * as Location from 'expo-location';
 import AppContext from '../../Context/AppContext'
 import { useContext } from 'react'
-import { SET_TAKE_ORDER_PLACE } from '../../Constants/NameScreen'
+import { CHANGE_ADDRESS } from '../../Constants/NameScreen'
 
 const DetailedAddress = ({ navigation }) => {
    const API_KEY = 'uGwlo6yHxKnoqSPqp0Enla92wOd1YpmpbYrEy3GK'
@@ -28,7 +28,9 @@ const DetailedAddress = ({ navigation }) => {
       navigation.navigate('Trang chủ')
    }
    const onClickChageAddress = () => {
-      navigation.navigate(SET_TAKE_ORDER_PLACE)
+      navigation.navigate(CHANGE_ADDRESS, {
+         id: 1
+      })
    }
    const onClickConfirm = async () => {
       setAddress(addressDetail)

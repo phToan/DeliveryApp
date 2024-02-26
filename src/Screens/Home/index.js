@@ -29,96 +29,66 @@ const Home = ({ navigation }) => {
         navigation.navigate(NameScreen.DELIVERY_PLACE)
     }
 
-    useEffect(() => {
-        (async () => {
-            let { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                console.log('Permission to access location was denied');
-                return
-            }
-            let location = await Location.getCurrentPositionAsync();
-            await AsyncStorage.setItem('origin', `${location.coords.latitude},${location.coords.longitude}`)
-            await AsyncStorage.setItem('origin_lat', `${location.coords.latitude}`)
-            await AsyncStorage.setItem('origin_long', `${location.coords.longitude}`)
-            try {
-                const response = await axios.get(
-                    `https://rsapi.goong.io/Geocode?latlng=${location.coords.latitude},${location.coords.longitude}&api_key=${API_KEY_GEOCODE}`
-                )
-                const data = response.data
-                console.log(data)
-                if (data.status === 'OK' && data.results.length > 0) {
-                    const locate = data.results[1].formatted_address
-                    await AsyncStorage.setItem('setCurrPos', locate)
-                    await AsyncStorage.setItem('setCurrAddress', locate)
-                    dispatch(senderAddress(locate))
-                    setAddress(locate)
-                }
-            } catch (error) {
-                console.error(error.message)
-            }
-        })()
-    }, [])
+    const renderMap = async () => {
+        try {
+            const itemLocate = address
+            const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${itemLocate}&key=${API_KEY_GEOCODE}`)
+            const data = response.data
 
-    useEffect(() => {
-        const renderMap = async () => {
-            try {
-                const itemLocate = address
-                const response = await axios.get(`https://rsapi.goong.io/Geocode?address=${itemLocate}&api_key=${API_KEY_GEOCODE}`)
-                const data = response.data
+            setAddress(data.results[0].formatted_address)
+            const location = data.results[0].geometry.location
+            setLatitude(location.lat)
+            setLongitude(location.lng)
+            setRegion({
+                latitude: location.lat,
+                longitude: location.lng,
+                latitudeDelta: 0.001,
+                longitudeDelta: 0.001,
+            })
 
-                if (data.status === 'OK' && data.results.length > 0) {
-                    setAddress(data.results[0].formatted_address)
-                    const location = data.results[0].geometry.location
-                    setLatitude(location.lat)
-                    setLongitude(location.lng)
-                    setRegion({
-                        latitude: location.lat,
-                        longitude: location.lng,
-                        latitudeDelta: 0.001,
-                        longitudeDelta: 0.001,
-                    })
-                }
-            } catch (error) {
-                console.log(error.message)
-            }
+        } catch (error) {
+            console.log(error.message)
         }
+    }
+
+    const getLocation = async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            console.log('Permission to access location was denied');
+            return
+        }
+        let location = await Location.getCurrentPositionAsync();
+        await AsyncStorage.setItem('origin', `${location.coords.latitude},${location.coords.longitude}`)
+        await AsyncStorage.setItem('origin_lat', `${location.coords.latitude}`)
+        await AsyncStorage.setItem('origin_long', `${location.coords.longitude}`)
+        try {
+            const response = await axios.get(
+                `https://rsapi.goong.io/Geocode?latlng=${location.coords.latitude},${location.coords.longitude}&api_key=${API_KEY_GEOCODE}`
+            )
+            const data = response.data
+            console.log(data)
+            if (data.status === 'OK' && data.results.length > 0) {
+                const locate = data.results[1].formatted_address
+                await AsyncStorage.setItem('setCurrPos', locate)
+                await AsyncStorage.setItem('setCurrAddress', locate)
+                dispatch(senderAddress(locate))
+                setAddress(locate)
+            }
+        } catch (error) {
+            console.error(error.message)
+        }
+    }
+
+    useEffect(() => {
         renderMap()
     }, [address])
 
 
     useEffect(() => {
-        const renderMap = async () => {
-            try {
-                const itemLocate = address
-                const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${itemLocate}&key=${API_KEY_GEOCODE}`)
-                const data = response.data
-
-                setAddress(data.results[0].formatted_address)
-                const location = data.results[0].geometry.location
-                setLatitude(location.lat)
-                setLongitude(location.lng)
-                setRegion({
-                    latitude: location.lat,
-                    longitude: location.lng,
-                    latitudeDelta: 0.001,
-                    longitudeDelta: 0.001,
-                })
-
-            } catch (error) {
-                console.log(error.message)
-            }
-        }
+        getLocation()
         renderMap()
     }, [])
 
-    const calculateDelta = () => {
-        const LATITUDE_DELTA = 0.009
-        const LONGITUDE_DELTA = 0.009
-        return {
-            latitudeDelta: LATITUDE_DELTA,
-            longitudeDelta: LONGITUDE_DELTA,
-        }
-    }
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.header} />
@@ -179,7 +149,8 @@ const Home = ({ navigation }) => {
                                     initialRegion={{
                                         latitude,
                                         longitude,
-                                        ...calculateDelta(),
+                                        latitudeDelta: 0.009,
+                                        longitudeDelta: 0.009
                                     }}
                                     region={region}
                                 >

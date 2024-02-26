@@ -8,10 +8,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import MapView, { Marker } from 'react-native-maps'
 import axios from 'axios';
 import * as Location from 'expo-location';
-import { TAKE_ORDER_PLACE } from '../../Constants/NameScreen'
+import { TAKE_ORDER_PLACE } from '../../../Constants/NameScreen'
 
 
-const SetAddressSender = ({ navigation }) => {
+const SetAddressSender = ({ navigation, route }) => {
+   const { id } = route.params
    const API_KEY = 'uGwlo6yHxKnoqSPqp0Enla92wOd1YpmpbYrEy3GK'
    const [detailAddress, setDetailAddress] = useState('')
    const [searchTerm, setSearchTerm] = useState('');
@@ -204,37 +205,6 @@ const SetAddressSender = ({ navigation }) => {
                   <Marker coordinate={{ latitude, longitude }} />
                </MapView>
             )}
-
-            {/* {currentLocation ? (
-               <MapView
-                  style={{ flex: 1 }}
-                  initialRegion={{
-                     latitude: currentLocation.latitude,
-                     longitude: currentLocation.longitude,
-                     // latitude: latitude,
-                     // longitude: longitude,
-                     latitudeDelta: 0.0922,
-                     longitudeDelta: 0.0421,
-                  }}
-                  region={{
-                     latitude: currentLocation.latitude,
-                     longitude: currentLocation.longitude,
-                     latitudeDelta: 0.01, // Điều chỉnh giá trị này để phóng to bản đồ
-                     longitudeDelta: 0.01, // Điều chỉnh giá trị này để phóng to bản đồ
-                  }}
-               >
-                  <Marker
-                     coordinate={{
-                        latitude: currentLocation.latitude,
-                        longitude: currentLocation.longitude,
-                     }}
-                     title="Vị trí hiện tại"
-                  />
-               </MapView>
-
-            ) : (
-               <Text>Loading...</Text>
-            )} */}
          </View>
 
          <View style={{
