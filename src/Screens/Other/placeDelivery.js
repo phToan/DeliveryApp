@@ -5,8 +5,7 @@ import { AntDesign, MaterialCommunityIcons, Entypo } from '../../Assets/icon'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as NameScreen from '../../Constants/NameScreen'
 import { useDispatch, useSelector } from 'react-redux'
-import { receiverAddress } from '../../Redux/Reducers/receiverSlice'
-import { senderAddress } from '../../Redux/Reducers/senderSlice'
+import { receiverAddress, latitude, longitude } from '../../Redux/Reducers/receiverSlice'
 
 const PlaceDelivery = ({ navigation }) => {
    const dispatch = useDispatch()
@@ -58,6 +57,8 @@ const PlaceDelivery = ({ navigation }) => {
                await AsyncStorage.setItem('destination', `${lat},${lng}`)
                await AsyncStorage.setItem('destination_lat', `${lat}`)
                await AsyncStorage.setItem('destination_long', `${lng}`)
+               dispatch(latitude(lat))
+               dispatch(longitude(lng))
             } else {
                console.error('Không thể lấy được toạ độ từ địa chỉ');
             }

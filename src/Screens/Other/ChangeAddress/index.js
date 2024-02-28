@@ -1,27 +1,26 @@
 import React, { useState, useEffect } from 'react'
 import { View, SafeAreaView, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView, FlatList } from 'react-native'
 import Icon from 'react-native-vector-icons/AntDesign'
-import Icon1 from 'react-native-vector-icons/Ionicons'
-import Icon3 from 'react-native-vector-icons/Entypo'
-import { useFocusEffect, useRoute } from '@react-navigation/native'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import MapView, { Marker } from 'react-native-maps'
 import axios from 'axios';
-import * as Location from 'expo-location';
-import { TAKE_ORDER_PLACE } from '../../../Constants/NameScreen'
-
+import { Map } from '../../../Components/MapView'
+import { useDispatch } from 'react-redux'
+import { senderAddress, latitude as senderLat, longitude as senderLng } from '../../../Redux/Reducers/senderSlice'
+import { receiverAddress, latitude as receiverLat, longitude as receiverLng } from '../../../Redux/Reducers/receiverSlice'
+import { ItemSearchAddress } from '../../../Components/ItemSearchAddress'
+import { ItemSeparatorView } from '../../../Components/itemSeparator'
+import { styles } from './styles';
+import { ButtonConfirm } from '../../../Components/ButtonConfirm';
+import { AntDesign, Entypo } from '../../../Assets/icon';
 
 const SetAddressSender = ({ navigation, route }) => {
-   const { id } = route.params
+   const { id, latitude, longitude, address } = route.params
    const API_KEY = 'uGwlo6yHxKnoqSPqp0Enla92wOd1YpmpbYrEy3GK'
-   const [detailAddress, setDetailAddress] = useState('')
    const [searchTerm, setSearchTerm] = useState('');
    const [predictions, setPredictions] = useState([])
-   const [latitude, setLatitude] = useState(null)
-   const [longitude, setLongitude] = useState(null)
-   const [region, setRegion] = useState(null);
-   const [address, setAddress] = useState('');
-
+   const [lat, setLat] = useState(latitude)
+   const [lng, setLng] = useState(longitude)
+   const [locate, setLocate] = useState(address);
+   const dispatch = useDispatch()
    const handleSearch = async (text) => {
       setSearchTerm(text)
       const apiUrl = `https://rsapi.goong.io/Place/AutoComplete?input=${text}&components=country:VN&api_key=${API_KEY}`
@@ -40,41 +39,21 @@ const SetAddressSender = ({ navigation, route }) => {
    }
 
    const onClickConfirm = async () => {
-      // await AsyncStorage.setItem('setCurrAddress',address)
-      navigation.navigate(TAKE_ORDER_PLACE, { data: address })
+      if (id == 1) {
+         dispatch(senderAddress(locate))
+         dispatch(senderLat(lat))
+         dispatch(senderLng(lng))
+      } else {
+         dispatch(receiverAddress(locate))
+         dispatch(receiverLat(lat))
+         dispatch(receiverLng(lng))
+      }
+      navigation.goBack()
    }
 
    const onClickReturn = () => {
       navigation.goBack()
    }
-
-
-   useEffect(() => {
-      const getLocationCoordinates = async () => {
-         setAddress(await AsyncStorage.getItem('setCurrPos'))
-         let { status } = await Location.requestForegroundPermissionsAsync();
-         if (status !== 'granted') {
-            console.log('Permission to access location was denied');
-            return;
-         }
-         let location = await Location.getCurrentPositionAsync({});
-         const { latitude, longitude } = location.coords;
-         setLatitude(latitude);
-         setLongitude(longitude);
-         // try {
-         //    const response = await axios.get(
-         //       `https://maps.googleapis.com/maps/api/geocode/json?latlng=${location.coords.latitude},${location.coords.longitude}&key=${API_KEY}`
-         //    )
-         //    const data = response.data;
-         //    if (data.status === 'OK' && data.results.length > 0) {
-         //       setAddress(data.results[0].formatted_address)
-         //    }
-         // } catch (error) {
-         //    console.log(error.message)
-         // }
-      }
-      getLocationCoordinates()
-   }, []);
 
    const onClickItem = async (item) => {
       setSearchTerm(item.description)
@@ -85,173 +64,73 @@ const SetAddressSender = ({ navigation, route }) => {
          const data = response.data
          console.log(data)
          if (data.status === 'OK' && data.results.length > 0) {
-            setAddress(data.results[0].formatted_address)
+            setLocate(data.results[0].formatted_address)
             console.log(address)
             const location = data.results[0].geometry.location
-            setLatitude(location.lat)
-            setLongitude(location.lng)
-            setRegion({
-               latitude: location.lat,
-               longitude: location.lng,
-               latitudeDelta: 0.008,
-               longitudeDelta: 0.008,
-            })
+            setLat(location.lat)
+            setLng(location.lng)
          }
       } catch (error) {
          console.log(error.message)
       }
    }
-
-   const renderItem = ({ item }) => {
-      return (
-         <TouchableOpacity style={{
-            height: 50,
-            flexDirection: 'row',
-            alignItems: 'center'
-         }} onPress={() => onClickItem(item)}>
-            <View style={{ flex: 1 }}>
-               <View style={{
-                  padding: 3,
-                  backgroundColor: '#d3dad7',
-                  marginHorizontal: 7,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: 5
-               }}>
-                  <Icon3 name='location-pin' size={20} color={'#616563'} />
-               </View>
-            </View>
-            <View style={{ flex: 9 }}>
-               <Text style={{ fontWeight: '500' }}>{item.description}</Text>
-            </View>
-         </TouchableOpacity>
-      )
-
+   const handleSearchText = () => {
+      setSearchTerm('')
    }
-
-   const ItemSeparatorView = () => {
-      return (
-         <View style={{
-            height: 0.5,
-            width: '100%',
-            backgroundColor: '#c8c8c8',
-            marginLeft: 40
-         }} />
-      )
-   }
-
-   const calculateDelta = () => {
-      const LATITUDE_DELTA = 0.01
-      const LONGITUDE_DELTA = 0.01
-      return {
-         latitudeDelta: LATITUDE_DELTA,
-         longitudeDelta: LONGITUDE_DELTA,
-      };
-   };
    return (
-      <SafeAreaView style={{ flex: 1 }}>
-         <View style={{ height: 35, backgroundColor: 'darkorange' }} />
-         <View style={{
-            flexDirection: 'row',
-            paddingHorizontal: 5,
-            paddingVertical: 10,
-            backgroundColor: 'white',
-            // flex: 1.3
-            height: 70
-         }}>
-            <TouchableOpacity style={{
-               borderWidth: 0.2,
-               borderColor: 'darkorange',
-               flex: 1,
-               borderRadius: 100,
-               backgroundColor: 'white',
-               justifyContent: 'center',
-               alignItems: 'center'
-            }} onPress={onClickReturn}>
+      <SafeAreaView style={styles.container}>
+         <View style={styles.header}>
+            <TouchableOpacity style={styles.icon} onPress={onClickReturn}>
                <Icon name='arrowleft' size={25} />
             </TouchableOpacity>
             <View style={styles.textInput}>
                <TextInput
-                  style={{}}
+                  style={{ width: searchTerm.length > 0 ? '92%' : '100%' }}
+                  numberOfLines={1}
                   onChangeText={handleSearch}
                   value={searchTerm}
                   placeholder='Tìm kiếm ở đây'
                   placeholderTextColor={'black'}
                />
+               {searchTerm.length > 0 &&
+                  <TouchableOpacity style={styles.icon_del} onPress={handleSearchText}>
+                     <AntDesign name='closecircle' size={20} color={'black'} />
+                  </TouchableOpacity>}
             </View>
          </View>
+         <View style={styles.locate}>
+            <View style={styles.icon_locate}>
+               <Entypo name='location' size={25} color={'red'} />
+            </View>
+            <Text style={styles.t_locate} numberOfLines={2}>{locate}</Text>
+         </View>
 
-         <View style={{ flex: 18 }}>
-            <View style={{ marginTop: 10, backgroundColor: 'white' }}>
+         <View style={styles.map}>
+            <View style={styles.flatlist}>
                <FlatList
                   data={predictions}
-                  renderItem={renderItem}
-                  keyExtractor={(item) => item.place_id}
-                  ItemSeparatorComponent={ItemSeparatorView}
+                  renderItem={({ item }) => (
+                     <ItemSearchAddress item={item} onPress={onClickItem} />
+                  )}
+                  // keyExtractor={({ item }) => item.place_id}
+                  ItemSeparatorComponent={() => (
+                     <ItemSeparatorView />
+                  )}
                />
             </View>
 
-
-            {latitude && longitude && (
-               <MapView
-                  style={{ flex: 1 }}
-                  initialRegion={{
-                     latitude,
-                     longitude,
-                     ...calculateDelta(),
-                  }}
-                  region={region}
-               >
-                  <Marker coordinate={{ latitude, longitude }} />
-               </MapView>
-            )}
+            <Map
+               lat={parseFloat(lat)}
+               lng={parseFloat(lng)}
+               delta={0.01} />
          </View>
-
-         <View style={{
-            backgroundColor: 'white',
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingHorizontal: 10,
-            paddingVertical: 15,
-            borderBottomWidth: 0.2,
-            borderColor: '#8f8f99',
-            flex: 1.1
-         }}>
-            <View style={{ paddingHorizontal: 5, flex: 1, justifyContent: 'center' }}>
-               <Icon1 name='ios-locate-sharp' size={25} color={'blue'} />
-            </View>
-            <View style={{ flex: 8 }}>
-               <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{address}</Text>
-            </View>
-         </View>
-
-         <TouchableOpacity style={{
-            backgroundColor: 'darkorange',
-            paddingVertical: 13,
-            flex: 1,
-            justifyContent: 'center'
-         }} onPress={onClickConfirm}>
-            <Text style={{
-               textAlign: 'center',
-               fontSize: 20,
-               fontWeight: 'bold',
-               color: 'white',
-            }}>Xác nhận địa chỉ</Text>
-         </TouchableOpacity>
-
+         <ButtonConfirm
+            footerStyle={styles.footer}
+            onPress={onClickConfirm}
+            title={'Xác nhận'}
+            validate={true} />
       </SafeAreaView>
    )
 }
 
 export default SetAddressSender
-
-const styles = StyleSheet.create({
-   textInput: {
-      borderWidth: 1,
-      paddingVertical: 10,
-      paddingHorizontal: 15,
-      borderRadius: 10,
-      flex: 6,
-      marginHorizontal: 5
-   },
-})

@@ -24,8 +24,8 @@ const Login = () => {
    const [errorMessage, setErrorMessage] = useState('')
    const [isValidPhone, setValidPhone] = useState(true);
    const [isValidPass, setValidPass] = useState(true);
-   const [phoneNumber, setPhoneNumber] = useState('');
-   const [password, setPassword] = useState('');
+   const [phoneNumber, setPhoneNumber] = useState('0335539676');
+   const [password, setPassword] = useState('12345678');
 
    let messagePhone, messagePass
    if (!isValidPhone) {

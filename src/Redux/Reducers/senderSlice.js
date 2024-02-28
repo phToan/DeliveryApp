@@ -2,10 +2,13 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     address: "",
+    latitude: 0,
+    longitude: 0,
     name: "",
     phone: "",
     homeNumber: "",
-    note: ""
+    note: "",
+
 }
 
 export const inforSender = createSlice({
@@ -26,6 +29,12 @@ export const inforSender = createSlice({
         },
         note: (state, action) => {
             state.note = action.payload
+        },
+        latitude: (state, action) => {
+            state.latitude = action.payload
+        },
+        longitude: (state, action) => {
+            state.longitude = action.payload
         }
     }
 })
@@ -35,6 +44,8 @@ export const {
     senderName,
     senderPhone,
     homeNumber,
-    note
+    note,
+    latitude,
+    longitude
 } = inforSender.actions
 export default inforSender.reducer

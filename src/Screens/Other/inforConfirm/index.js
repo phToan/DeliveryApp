@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Text, View, TouchableOpacity, ScrollView } from "react-native";
 import { styles } from "./styles";
 import { textInput as TextInput } from "../../../Components/TextInput";
@@ -7,23 +7,30 @@ import color from "../../../Assets/color";
 import { Map } from "../../../Components/MapView";
 import { TextTickerItem } from "../../../Components/TextTicker";
 import { ButtonConfirm } from "../../../Components/ButtonConfirm";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { senderName, senderPhone, homeNumber as homeSenderNumber, note as senderNote } from "../../../Redux/Reducers/senderSlice";
 import { receiverName, receiverPhone, homeNumber as homeReceiverNumber, note as receiverNote } from "../../../Redux/Reducers/receiverSlice";
 import { CHANGE_ADDRESS } from "../../../Constants/NameScreen";
+import { ExitButtonCircle } from "../../../Components/ExitButton";
+import { CheckSavedAddress } from "../../../Components/CheckBox_Saved_Address";
 
 const InforConfirm = ({ route, navigation }) => {
     const {
         id,
         title,
-        address,
         name,
-        phone,
-        latitude,
-        longitude,
+        phone
     } = route.params
-    const lat = parseFloat(latitude)
-    const lng = parseFloat(longitude)
+    const lat = useSelector((state) =>
+        id == 1 ? state.senderSlice.latitude : state.receiverSlice.latitude
+    )
+    console.log('lat: ', lat)
+    const lng = useSelector((state) =>
+        id == 1 ? state.senderSlice.longitude : state.receiverSlice.longitude
+    )
+    const address = useSelector((state) =>
+        id == 1 ? state.senderSlice.address : state.receiverSlice.address
+    )
     const [homeNumber, setHomeNumber] = useState('')
     const [userName, setName] = useState(name)
     const [phoneNumber, setPhone] = useState(phone)
@@ -47,10 +54,13 @@ const InforConfirm = ({ route, navigation }) => {
     }
     const handleAddress = () => {
         navigation.navigate(CHANGE_ADDRESS, {
-            id: id
+            id: id,
+            latitude: lat,
+            longitude: lng,
+            address: address
         })
     }
-    const onPressExit = () => {
+    const onPressConfirm = () => {
         if (id == 1) {
             dispatch(senderName(userName))
             dispatch(senderPhone(phoneNumber))
@@ -64,11 +74,18 @@ const InforConfirm = ({ route, navigation }) => {
         }
         navigation.goBack()
     }
+    const onPressExit = () => {
+        navigation.goBack()
+    }
     const validate = userName.length > 0 && phoneNumber.length > 0
     return (
         <View style={styles.modal}>
             <View style={styles.map}>
-                <Map lat={lat} lng={lng} />
+                <Map
+                    lat={parseFloat(lat)}
+                    lng={parseFloat(lng)}
+                    delta={0.001}
+                />
             </View>
             <Text style={styles.message}>Thông tin {title}</Text>
             <View style={styles.body}>
@@ -107,28 +124,17 @@ const InforConfirm = ({ route, navigation }) => {
                         keyboardType={'default'}
                         value={note}
                         onChangeText={onChangeNote} />
-
-                    <View style={styles.save}>
-                        <View>
-                            <Text style={styles.saveTitle}>Lưu địa điểm này</Text>
-                            <Text style={{ fontSize: 13 }}>Lưu thông tin người nhận cho các lần giao hàng sau</Text>
-                        </View>
-                        <TouchableOpacity onPress={handleSavedLocate}>
-                            <MaterialCommunityIcons
-                                name={save ? 'checkbox-marked' : 'checkbox-blank-outline'}
-                                size={25}
-                                color={save ? color.orange : color.silver}
-                            />
-                        </TouchableOpacity>
-                    </View>
+                    <CheckSavedAddress
+                        handleSavedLocate={handleSavedLocate}
+                        save={save} />
                 </ScrollView>
             </View>
             <ButtonConfirm
                 footerStyle={styles.footer}
-                onPress={onPressExit}
+                onPress={onPressConfirm}
                 validate={validate}
                 title={'Xác nhận'} />
-
+            <ExitButtonCircle onPressExit={onPressExit} />
         </View >
     )
 }

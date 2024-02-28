@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react'
+import React, { useState, useMemo, useCallback } from 'react'
 import { View, SafeAreaView, Text, TouchableOpacity, TextInput, ScrollView } from 'react-native'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import axios from 'axios'
 import { FontAwesome5, MaterialIcons, Fontisto, MaterialCommunityIcons } from '../../../Assets/icon'
 import { TAB_SCREEN, INFOR_CONFIRM } from '../../../Constants/NameScreen'
 import { useSelector } from 'react-redux'
 import { styles } from './styles'
+import { useFocusEffect } from '@react-navigation/native'
 import SysModal from '../../../Components/Modal/SysModal'
 import { Header } from '../../../Components/Header'
 import { inforSender as Infor, TransportMethod } from '../../../Components/OrderConfirm'
@@ -18,10 +18,6 @@ const OrderConfirm = ({ navigation }) => {
    const [fastShip, setFastShip] = useState(false)
    const [expressShip, setExpressShip] = useState(false)
    const [usePoint, setUsePoint] = useState(false)
-   const [latOrigin, setLatOrigin] = useState(null)
-   const [lngOrigin, setLngOrigin] = useState(null)
-   const [latDestination, setLatDestination] = useState(null)
-   const [lngDestination, setLngDestination] = useState(null)
 
    const senderAddress = useSelector((state) => state.senderSlice.address)
    const receiverAddress = useSelector((state) => state.receiverSlice.address)
@@ -33,6 +29,8 @@ const OrderConfirm = ({ navigation }) => {
    const detailAddressReciever = useSelector((state) => state.receiverSlice.detailAddress)
    const point = useSelector((state) => state.userInforSlice.point)
    const id = useSelector((state) => state.userInforSlice.id)
+   const senderCoordinate = useSelector((state) => state.senderSlice)
+   const receiverCoordinate = useSelector((state) => state.receiverSlice)
 
    const apiKey = 'uGwlo6yHxKnoqSPqp0Enla92wOd1YpmpbYrEy3GK'
 
@@ -65,18 +63,11 @@ const OrderConfirm = ({ navigation }) => {
       setUsePoint(!usePoint)
    }
 
-   const getData = async () => {
-      setLatOrigin(await AsyncStorage.getItem('origin_lat'))
-      setLngOrigin(await AsyncStorage.getItem('origin_long'))
-      setLatDestination(await AsyncStorage.getItem('destination_lat'))
-      setLngDestination(await AsyncStorage.getItem('destination_long'))
-   }
-
-   const calculateDistance = async () => {
+   const calculateDistance = useCallback(async () => {
       try {
          let origin, destination
-         origin = await AsyncStorage.getItem('origin')
-         destination = await AsyncStorage.getItem('destination')
+         origin = `${senderCoordinate.latitude},${senderCoordinate.longitude}`
+         destination = `${receiverCoordinate.latitude},${receiverCoordinate.longitude}`
          const response = await fetch(
             `https://rsapi.goong.io/Direction?origin=${origin}&destination=${destination}&vehicle=bike&api_key=${apiKey}`
          );
@@ -90,12 +81,11 @@ const OrderConfirm = ({ navigation }) => {
       } catch (error) {
          console.log('Lỗi 2:', error);
       }
-   }
+   }, [senderCoordinate.latitude, senderCoordinate.longitude, receiverCoordinate.latitude, receiverCoordinate.longitude])
 
-   useEffect(() => {
-      getData()
+   useFocusEffect(() => {
       calculateDistance()
-   }, [])
+   })
 
    const transportFee = useMemo(() => {
       let cost
@@ -140,11 +130,8 @@ const OrderConfirm = ({ navigation }) => {
       navigation.navigate(INFOR_CONFIRM, {
          id: 1,
          title: 'người gửi',
-         address: senderAddress,
          name: senderName,
          phone: senderPhone,
-         latitude: latOrigin,
-         longitude: lngOrigin,
       })
    }
 
@@ -152,11 +139,8 @@ const OrderConfirm = ({ navigation }) => {
       navigation.navigate(INFOR_CONFIRM, {
          id: 2,
          title: 'người nhận',
-         address: receiverAddress,
          name: receiverName,
          phone: receiverPhone,
-         latitude: latDestination,
-         longitude: lngDestination,
       })
    }
 

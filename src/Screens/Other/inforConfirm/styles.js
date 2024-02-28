@@ -14,7 +14,7 @@ export const styles = StyleSheet.create({
         flex: 5
     },
     map: {
-        flex: 1,
+        flex: 1.2,
         width: '100%',
         backgroundColor: 'blue'
     },
@@ -48,20 +48,9 @@ export const styles = StyleSheet.create({
         fontWeight: '500',
         marginBottom: 10
     },
-    save: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginVertical: 20
-    },
-    saveTitle: {
-        fontSize: 16,
-        fontWeight: '500',
-        color: 'black'
-    },
     footer: {
         flex: 0.8,
         justifyContent: 'center'
-    }
+    },
 
 })

@@ -2,60 +2,41 @@ import React, { useState, useEffect } from 'react'
 import { View, SafeAreaView, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView } from 'react-native'
 import color from '../../Assets/color'
 import Icon from 'react-native-vector-icons/AntDesign'
-import { useFocusEffect, useRoute } from '@react-navigation/native'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import MapView, { Marker } from 'react-native-maps'
-import axios from 'axios';
-import * as Location from 'expo-location';
 import AppContext from '../../Context/AppContext'
 import { useContext } from 'react'
 import { CHANGE_ADDRESS } from '../../Constants/NameScreen'
+import { Map } from '../../Components/MapView'
+import { useDispatch, useSelector } from 'react-redux'
+import { senderName, senderPhone, senderAddress } from '../../Redux/Reducers/senderSlice'
 
 const DetailedAddress = ({ navigation }) => {
-   const API_KEY = 'uGwlo6yHxKnoqSPqp0Enla92wOd1YpmpbYrEy3GK'
-   const { address, setAddress } = useContext(AppContext)
-   const route = useRoute()
-   const [addressDetail, setAddressDetail] = useState('')
-   const [addAddressDetail, setAddAddressDetail] = useState('Khong')
-   const [nameSender, setNameSender] = useState('')
-   const [phoneSender, setPhoneSender] = useState('')
+   const { setAddress } = useContext(AppContext)
+   const senderInfor = useSelector((state) => state.senderSlice)
+   const [addressDetail, setAddressDetail] = useState(senderInfor.address)
+   const [nameSender, setNameSender] = useState(senderInfor.name)
+   const [phoneSender, setPhoneSender] = useState(senderInfor.phone)
    const [isValidPhone, setValidPhone] = useState(true);
-   const [latitude, setLatitude] = useState(null)
-   const [longitude, setLongitude] = useState(null)
-   const [region, setRegion] = useState(null);
+   const dispatch = useDispatch()
 
    const onClickReturn = () => {
       navigation.navigate('Trang chủ')
    }
    const onClickChageAddress = () => {
       navigation.navigate(CHANGE_ADDRESS, {
-         id: 1
+         id: 1,
+         latitude: senderInfor.latitude,
+         longitude: senderInfor.longitude,
+         address: addressDetail
       })
    }
    const onClickConfirm = async () => {
       setAddress(addressDetail)
       navigation.navigate('Trang chủ')
-      await AsyncStorage.setItem('senderName', nameSender)
-      await AsyncStorage.setItem('senderPhone', phoneSender)
-      await AsyncStorage.setItem('setCurrAddress', addressDetail)
-      await AsyncStorage.setItem('detailAdd', addAddressDetail)
-      getSenderCoordinates(addressDetail)
+      dispatch(senderName(nameSender))
+      dispatch(senderPhone(phoneSender))
+      dispatch(senderAddress(addressDetail))
    }
-   const getSenderCoordinates = async (address) => {
-      await fetch(`https://rsapi.goong.io/Geocode?address=${encodeURIComponent(address)}&api_key=${API_KEY}`)
-         .then((response) => response.json())
-         .then(async (data) => {
-            if (data.results && data.results.length > 0) {
-               const { lat, lng } = data.results[0].geometry.location;
-               await AsyncStorage.setItem('origin', `${lat},${lng}`)
-            } else {
-               console.error('Không thể lấy được toạ độ từ địa chỉ');
-            }
-         })
-         .catch((error) => {
-            console.error('Lỗi:', error);
-         });
-   }
+
    const verifyPhone = (phone) => {
       let phoneNumberRegex = /^(03[2-9]|05[6-9]|07[0-9]|08[1-9]|09[0-9])+([0-9]{7})$/; // Biểu thức chính quy kiểm tra đầu số Việt Nam
       if (phoneNumberRegex.test(phone)) {
@@ -69,58 +50,6 @@ const DetailedAddress = ({ navigation }) => {
       }
    }
 
-   useEffect(() => {
-      const getInfor = async () => {
-         setNameSender(await AsyncStorage.getItem('name'))
-         setPhoneSender(await AsyncStorage.getItem('phone'))
-         setAddressDetail(await AsyncStorage.getItem('setCurrPos'))
-         // setAddAddressDetail(await AsyncStorage.getItem('detailAdd'))
-      }
-      getInfor()
-   }, [])
-
-   useEffect(() => {
-      if (route?.params?.data) {
-         setAddressDetail(route.params?.data)
-         // setAddress(route.params?.data)
-      }
-   }, [route?.params?.data])
-
-   useFocusEffect(() => {
-      const getLocationCoordinates = async () => {
-         try {
-            const addresses = addressDetail
-
-            const response = await axios.get(
-               `https://rsapi.goong.io/Geocode?address=${addresses}&api_key=${API_KEY}`
-            )
-            const data = response.data
-            if (data.status === 'OK' && data.results.length > 0) {
-               const location = data.results[0].geometry.location
-               setLatitude(location.lat)
-               setLongitude(location.lng)
-               setRegion({
-                  latitude: location.lat,
-                  longitude: location.lng,
-                  latitudeDelta: 0.001,
-                  longitudeDelta: 0.001,
-               })
-            }
-         } catch (error) {
-            console.log(error.message + 'l');
-         }
-      }
-      getLocationCoordinates()
-   })
-
-   const calculateDelta = () => {
-      const LATITUDE_DELTA = 0.01;
-      const LONGITUDE_DELTA = 0.01;
-      return {
-         latitudeDelta: LATITUDE_DELTA,
-         longitudeDelta: LONGITUDE_DELTA,
-      }
-   }
    return (
       <SafeAreaView style={{ flex: 1 }}>
          <View style={styles.header}>
@@ -138,19 +67,10 @@ const DetailedAddress = ({ navigation }) => {
                      <Text style={styles.t_address}>Lấy hàng tại</Text>
                   </View>
                   <View style={styles.map}>
-                     {latitude && longitude && (
-                        <MapView
-                           style={{ flex: 1 }}
-                           initialRegion={{
-                              latitude,
-                              longitude,
-                              ...calculateDelta(),
-                           }}
-                           region={region}
-                        >
-                           <Marker coordinate={{ latitude, longitude }} />
-                        </MapView>
-                     )}
+                     <Map
+                        lat={parseFloat(senderInfor.latitude)}
+                        lng={parseFloat(senderInfor.longitude)}
+                        delta={0.003} />
                   </View>
                   <View style={styles._body_address}>
                      <View style={{ flex: 3 }}>
@@ -159,17 +79,6 @@ const DetailedAddress = ({ navigation }) => {
                      <TouchableOpacity style={styles.b_change} onPress={onClickChageAddress}>
                         <Text style={styles.t_change}>Thay đổi</Text>
                      </TouchableOpacity>
-                  </View>
-                  <View style={styles.textInput}>
-                     <TextInput
-                        style={{}}
-                        placeholder='Thêm địa chỉ chi tiết'
-                        defaultValue={addAddressDetail}
-                        placeholderTextColor={color.black}
-                        onChangeText={(text) => {
-                           setAddAddressDetail(text)
-                        }}
-                     />
                   </View>
                </View>
                <View style={styles._body_sender}>
