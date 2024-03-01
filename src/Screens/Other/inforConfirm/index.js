@@ -24,7 +24,6 @@ const InforConfirm = ({ route, navigation }) => {
     const lat = useSelector((state) =>
         id == 1 ? state.senderSlice.latitude : state.receiverSlice.latitude
     )
-    console.log('lat: ', lat)
     const lng = useSelector((state) =>
         id == 1 ? state.senderSlice.longitude : state.receiverSlice.longitude
     )

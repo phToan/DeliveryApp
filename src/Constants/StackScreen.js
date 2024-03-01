@@ -2,18 +2,17 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import Login from '../Screens/Login/index';
 import BottomTab from '../TabScreen/BottomTab/index'
 import Register from "../Screens/Register/index"
-import DetailedAddress from "../Screens/Other/address";
-import PlaceDelivery from "../Screens/Other/placeDelivery";
+import DetailedAddress from "../Screens/Other/PlaceTakeOrder/index";
+import PlaceDelivery from "../Screens/Other/PlaceDelivery/index";
 import SavedPlace from "../Screens/Other/savedPlace";
 import AddPlace from "../Screens/Other/addPlace";
 import Map from "../Screens/Other/map";
-import ShipmentDetails from "../Screens/Other/shipmentDetails";
 import ChangeAddress from "../Screens/Other/ChangeAddress";
-import UserAccount from "../Screens/Other/userAccount";
-import EditProfile from "../Screens/Other/editProfile";
-import EditPassword from "../Screens/Other/editPassword";
+import UserAccount from "../Screens/Other/AccountDetail/index";
+import EditProfile from "../Screens/Other/ChangeAccount/ChangeProfile";
+import EditPassword from "../Screens/Other/ChangeAccount/ChangePassword/index";
 import OrderConfirm from "../Screens/Other/OrderConfirm/index"
-import DetailOrder from "../Screens/Other/detailOrder";
+import DetailOrder from "../Screens/Other/DetailOrder";
 import InforConfirm from "../Screens/Other/inforConfirm";
 import * as NameScreen from './NameScreen'
 
@@ -35,7 +34,6 @@ export default function StackScreen() {
             <Stack.Screen name={NameScreen.SAVED_PLACE} component={SavedPlace} />
             <Stack.Screen name={NameScreen.ADD_PLACE} component={AddPlace} />
             <Stack.Screen name={NameScreen.MAP} component={Map} />
-            <Stack.Screen name={NameScreen.SHIPMENT_DETAILS} component={ShipmentDetails} />
             <Stack.Screen name={NameScreen.CHANGE_ADDRESS} component={ChangeAddress} />
             <Stack.Screen name={NameScreen.USER_ACCOUNT} component={UserAccount} />
             <Stack.Screen name={NameScreen.EDIT_PROFILE} component={EditProfile} />

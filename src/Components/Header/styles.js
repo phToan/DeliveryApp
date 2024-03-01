@@ -6,10 +6,11 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingBottom: 15,
         backgroundColor: 'white',
-        borderBottomWidth: 1,
-        borderColor: 'darkorange',
         height: 80,
-        alignItems: 'flex-end'
+        alignItems: 'flex-end',
+        elevation: 3,
+        borderBottomWidth: 0.5,
+        borderColor: '#c1c1c1'
     },
     icon: {
         flex: 1

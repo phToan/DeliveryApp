@@ -9,6 +9,7 @@ import { useFocusEffect } from '@react-navigation/native'
 import SysModal from '../../../Components/Modal/SysModal'
 import { Header } from '../../../Components/Header'
 import { inforSender as Infor, TransportMethod } from '../../../Components/OrderConfirm'
+import { instance, instanceDirection } from '../../../Api/instance'
 
 
 const OrderConfirm = ({ navigation }) => {
@@ -25,8 +26,8 @@ const OrderConfirm = ({ navigation }) => {
    const senderPhone = useSelector((state) => state.senderSlice.phone)
    const receiverName = useSelector((state) => state.receiverSlice.name)
    const receiverPhone = useSelector((state) => state.receiverSlice.phone)
-   const detailAddressSender = useSelector((state) => state.senderSlice.detailAddress)
-   const detailAddressReciever = useSelector((state) => state.receiverSlice.detailAddress)
+   const detailAddressSender = useSelector((state) => state.senderSlice.homeNumber)
+   const detailAddressReciever = useSelector((state) => state.receiverSlice.homeNumber)
    const point = useSelector((state) => state.userInforSlice.point)
    const id = useSelector((state) => state.userInforSlice.id)
    const senderCoordinate = useSelector((state) => state.senderSlice)
@@ -47,7 +48,7 @@ const OrderConfirm = ({ navigation }) => {
    }, [])
 
    const onClickPlaceOrder = async () => {
-      await axios.post('https://delivery-server-s54c.onrender.com/order/customer', myOrder)
+      await instance.post('/order/customer', myOrder)
          .then((res) => {
             if (res.data.err == 0) {
                navigation.navigate('Đơn hàng', { screen: 'Đang chờ' })
@@ -68,11 +69,8 @@ const OrderConfirm = ({ navigation }) => {
          let origin, destination
          origin = `${senderCoordinate.latitude},${senderCoordinate.longitude}`
          destination = `${receiverCoordinate.latitude},${receiverCoordinate.longitude}`
-         const response = await fetch(
-            `https://rsapi.goong.io/Direction?origin=${origin}&destination=${destination}&vehicle=bike&api_key=${apiKey}`
-         );
-         const data = await response.json();
-         // console.log(data.routes[0].legs[0].distance.value)
+         const response = await instanceDirection(`&origin=${origin}&destination=${destination}`)
+         const data = await response.data;
          if (data.geocoded_waypoints[0].geocoder_status === 'OK') {
             const distanceString = data.routes[0].legs[0].distance.value;
             const distance = parseFloat(distanceString);
@@ -147,7 +145,7 @@ const OrderConfirm = ({ navigation }) => {
    return (
       <SafeAreaView style={{ flex: 1 }}>
 
-         <Header onClickReturn={onClickReturn} />
+         <Header onClickReturn={onClickReturn} title='Thanh toán' />
          <View style={{ flex: 14 }}>
             <ScrollView>
                <View style={styles.route}>

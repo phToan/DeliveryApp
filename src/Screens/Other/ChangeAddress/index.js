@@ -3,7 +3,7 @@ import { View, SafeAreaView, Text, TouchableOpacity, TextInput, StyleSheet, Scro
 import Icon from 'react-native-vector-icons/AntDesign'
 import axios from 'axios';
 import { Map } from '../../../Components/MapView'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { senderAddress, latitude as senderLat, longitude as senderLng } from '../../../Redux/Reducers/senderSlice'
 import { receiverAddress, latitude as receiverLat, longitude as receiverLng } from '../../../Redux/Reducers/receiverSlice'
 import { ItemSearchAddress } from '../../../Components/ItemSearchAddress'
@@ -11,22 +11,23 @@ import { ItemSeparatorView } from '../../../Components/itemSeparator'
 import { styles } from './styles';
 import { ButtonConfirm } from '../../../Components/ButtonConfirm';
 import { AntDesign, Entypo } from '../../../Assets/icon';
+import { GetCurrentLocation } from '../../../Components/getCurrentLocate';
+import { instanceAutoComplete, instanceCoord } from '../../../Api/instance';
 
 const SetAddressSender = ({ navigation, route }) => {
    const { id, latitude, longitude, address } = route.params
-   const API_KEY = 'uGwlo6yHxKnoqSPqp0Enla92wOd1YpmpbYrEy3GK'
-   const [searchTerm, setSearchTerm] = useState('');
+   const [searchTerm, setSearchTerm] = useState(address);
    const [predictions, setPredictions] = useState([])
    const [lat, setLat] = useState(latitude)
    const [lng, setLng] = useState(longitude)
    const [locate, setLocate] = useState(address);
+   const currentLocate = useSelector((state) => state.currentLocateSlice.initialState)
    const dispatch = useDispatch()
    const handleSearch = async (text) => {
       setSearchTerm(text)
-      const apiUrl = `https://rsapi.goong.io/Place/AutoComplete?input=${text}&components=country:VN&api_key=${API_KEY}`
       try {
-         const response = await fetch(apiUrl);
-         const data = await response.json();
+         const response = await instanceAutoComplete.get(`${text}`)
+         const data = await response.data;
          if (data.predictions) {
             setPredictions(data.predictions);
          }
@@ -55,12 +56,16 @@ const SetAddressSender = ({ navigation, route }) => {
       navigation.goBack()
    }
 
+   const onPressCurrentLocate = () => {
+
+   }
+
    const onClickItem = async (item) => {
       setSearchTerm(item.description)
       setPredictions([])
       try {
          const itemLocate = item.description
-         const response = await axios.get(`https://rsapi.goong.io/Geocode?address=${itemLocate}&api_key=${API_KEY}`)
+         const response = await instanceCoord.get(`${itemLocate}`)
          const data = response.data
          console.log(data)
          if (data.status === 'OK' && data.results.length > 0) {
@@ -76,6 +81,7 @@ const SetAddressSender = ({ navigation, route }) => {
    }
    const handleSearchText = () => {
       setSearchTerm('')
+      setPredictions([])
    }
    return (
       <SafeAreaView style={styles.container}>
@@ -98,12 +104,8 @@ const SetAddressSender = ({ navigation, route }) => {
                   </TouchableOpacity>}
             </View>
          </View>
-         <View style={styles.locate}>
-            <View style={styles.icon_locate}>
-               <Entypo name='location' size={25} color={'red'} />
-            </View>
-            <Text style={styles.t_locate} numberOfLines={2}>{locate}</Text>
-         </View>
+
+         <GetCurrentLocation address={currentLocate.address} onPress={onPressCurrentLocate} />
 
          <View style={styles.map}>
             <View style={styles.flatlist}>
@@ -112,7 +114,7 @@ const SetAddressSender = ({ navigation, route }) => {
                   renderItem={({ item }) => (
                      <ItemSearchAddress item={item} onPress={onClickItem} />
                   )}
-                  // keyExtractor={({ item }) => item.place_id}
+                  keyExtractor={(item) => item.place_id}
                   ItemSeparatorComponent={() => (
                      <ItemSeparatorView />
                   )}

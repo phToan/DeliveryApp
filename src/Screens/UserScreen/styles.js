@@ -45,14 +45,6 @@ export const styles = StyleSheet.create({
       fontSize: 15,
       marginLeft: 20
    },
-   image: {
-      borderRadius: 100,
-      padding: 10,
-      backgroundColor: color.blue,
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-   },
    logout: {
       width: '100%',
       flexDirection: 'row',
@@ -61,6 +53,12 @@ export const styles = StyleSheet.create({
       marginTop: 20,
       alignItems: 'center',
    },
+   itemMember: {
+      flexDirection: 'row',
+      height: '100%',
+      alignItems: 'center'
+
+   },
    footer: {
       height: 170,
       marginTop: 30,
@@ -68,8 +66,9 @@ export const styles = StyleSheet.create({
    },
    avatar: {
       width: 50,
-      height: 30,
-      resizeMode: 'contain',
+      height: 50,
+      borderRadius: 60 / 2,
+      borderWidth: 1
    },
    background: {
       position: 'absolute',

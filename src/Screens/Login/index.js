@@ -14,10 +14,12 @@ import { changeDob, changeGender, changeName, changeID, changePhone, changePoint
 import { useDispatch } from 'react-redux'
 
 import * as NameScreen from '../../Constants/NameScreen'
+import { getData } from '../../Api/api_query'
+import { instance } from '../../Api/instance'
+import { getLocation } from '../../Api/getCurrentCoord'
 
 const Login = () => {
    const dispatch = useDispatch()
-   const { getSocket } = React.useContext(AppContext)
    const navigation = useNavigation()
    const [hidePass, setHidePass] = useState(true)
    const [showModal, setShowModal] = useState(false)
@@ -25,7 +27,7 @@ const Login = () => {
    const [isValidPhone, setValidPhone] = useState(true);
    const [isValidPass, setValidPass] = useState(true);
    const [phoneNumber, setPhoneNumber] = useState('0335539676');
-   const [password, setPassword] = useState('12345678');
+   const [password, setPassword] = useState('11111111');
 
    let messagePhone, messagePass
    if (!isValidPhone) {
@@ -57,48 +59,19 @@ const Login = () => {
       password: password
    }
 
-   const getData = async () => {
-      const accessToken = await AsyncStorage.getItem('access_token')
-      const data = {
-         headers: {
-            'Authorization': accessToken
-         }
-      }
-      await axios.get('http://192.168.23.197:3306/customer', data)
-         // await axios.get(`${process.env.URL}/customer`, data)
-         .then(async (res) => {
-            await AsyncStorage.setItem('id', res.data.userData.id.toString())
-            await AsyncStorage.setItem('name', res.data.userData.name)
-            await AsyncStorage.setItem('dob', res.data.userData.dob)
-            await AsyncStorage.setItem('gender', JSON.stringify(res.data.userData.gender))
-            await AsyncStorage.setItem('phone', res.data.userData.phone)
-            await AsyncStorage.setItem('point', JSON.stringify(res.data.userData.point))
-            dispatch(changeID(res.data.userData.id))
-            dispatch(changeName(res.data.userData.name))
-            dispatch(changeDob(res.data.userData.dob))
-            dispatch(changeGender(res.data.userData.gender))
-            dispatch(changePhone(res.data.userData.phone))
-            dispatch(changePoint(res.data.userData.point))
-            dispatch(senderName(res.data.userData.name))
-            dispatch(senderPhone(res.data.userData.phone))
-         })
-         .catch((err) => {
-            console.log(err)
-         })
-   }
    const onClickLogin = async () => {
-      await axios.post('http://192.168.23.197:3306/customer/login', data)
-         // await axios.post(`${process.env.URL}/customer/login`, data)
+      await instance.post('/customer/login', data)
          .then(async (res) => {
-            // console.log(res.data.err)
+
             if (res.data.err == 0) {
+               console.log('data: ', res.data)
                await AsyncStorage.setItem('access_token', res.data.access_token)
                await AsyncStorage.setItem('refresh_token', res.data.refresh_token)
+               await getData(dispatch)
+               await getLocation(dispatch)
                navigation.navigate(NameScreen.TAB_SCREEN)
                setPassword('')
                setHidePass(true)
-               getData()
-               getSocket()
             } else {
                setErrorMessage('Đăng nhập thất bại. Số điện thoại hoặc mật khẩu không chính xác')
                setShowModal(true)

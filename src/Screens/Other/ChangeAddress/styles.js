@@ -57,7 +57,7 @@ export const styles = StyleSheet.create({
     footer: {
         backgroundColor: 'white',
         paddingVertical: 13,
-        flex: 1,
+        height: 80,
         justifyContent: 'center'
     },
     icon_locate: {
