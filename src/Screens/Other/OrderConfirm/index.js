@@ -16,7 +16,7 @@ const OrderConfirm = ({ navigation }) => {
    const [orderInfor, setOrderInfor] = useState('')
    const [orderDescription, setOrderDescription] = useState(true)
    const [distance, setDistance] = useState('')
-   const [fastShip, setFastShip] = useState(false)
+   const [fastShip, setFastShip] = useState(true)
    const [expressShip, setExpressShip] = useState(false)
    const [usePoint, setUsePoint] = useState(false)
 
@@ -39,12 +39,12 @@ const OrderConfirm = ({ navigation }) => {
       navigation.navigate(TAB_SCREEN)
    }, [])
    const onClickFast = useCallback(() => {
-      setFastShip(!fastShip)
-      setExpressShip(fastShip)
+      setFastShip(true)
+      setExpressShip(false)
    }, [])
    const onClickExpress = useCallback(() => {
-      setExpressShip(!expressShip)
-      setFastShip(expressShip)
+      setExpressShip(true)
+      setFastShip(false)
    }, [])
 
    const onClickPlaceOrder = async () => {
@@ -141,6 +141,11 @@ const OrderConfirm = ({ navigation }) => {
          phone: receiverPhone,
       })
    }
+
+   const validate = receiverName.length > 0 && receiverAddress.length > 0
+      && receiverPhone.length > 0 && senderAddress.length > 0
+      && senderName.length > 0 && senderPhone.length > 0
+
 
    return (
       <SafeAreaView style={{ flex: 1 }}>
@@ -254,7 +259,10 @@ const OrderConfirm = ({ navigation }) => {
                   <Text style={{ fontSize: 15 }}><Text style={styles.underline}>đ</Text> {deliveryFee.toLocaleString()}</Text>
                </Text>
             </View>
-            <TouchableOpacity style={styles.b_order} onPress={onClickPlaceOrder}>
+            <TouchableOpacity
+               style={[styles.b_order, { backgroundColor: validate ? 'darkorange' : 'silver' }]}
+               onPress={onClickPlaceOrder}
+               disabled={!validate}>
                <Text style={styles.footer_order}>Đặt đơn</Text>
             </TouchableOpacity>
          </View>

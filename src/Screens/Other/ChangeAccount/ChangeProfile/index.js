@@ -21,7 +21,6 @@ const EditProfile = ({ route, navigation }) => {
    const [showModal, setShowModal] = useState(false)
    const [errorMessage, setErrorMessage] = useState('')
    const [isSuccess, setIsSuccess] = useState(false)
-   const [focus, setFocus] = useState(true)
    const dispatch = useDispatch()
    const onChange = (event, selectedDate) => {
       const currentDate = selectedDate;
@@ -102,15 +101,7 @@ const EditProfile = ({ route, navigation }) => {
    } else {
       imageSource = require('../../../../Assets/Image/girl_icon.jpg')
    }
-   const onFocus = () => {
-      setFocus(true)
-   }
-   const onBlur = () => {
-      if (nameUser.length == 0) {
-         setFocus(false)
-      }
 
-   }
    const handleName = (text) => {
       setNameUser(text)
       const words = text.split(' ')
@@ -128,26 +119,22 @@ const EditProfile = ({ route, navigation }) => {
                <Image source={imageSource} style={styles.avatar} />
             </View>
             <InputField
-               focus={focus}
                name={nameUser}
-               onBlur={onBlur}
-               onFocus={onFocus}
                onChangeText={handleName}
                disable={true}
                label={'Họ Tên'}
+               validate={true}
             />
             <DobField
                dob={dateOfBirth}
                onClickCalendar={onClickCalendar}
             />
             <InputField
-               focus={focus}
                name={route.params.data.phone}
-               onBlur={onBlur}
-               onFocus={onFocus}
                onChangeText={null}
                disable={false}
                label={'Số điện thoại'}
+               validate={true}
             />
          </View>
          <ButtonConfirm

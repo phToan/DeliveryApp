@@ -13,6 +13,7 @@ import { receiverName, receiverPhone, homeNumber as homeReceiverNumber, note as 
 import { CHANGE_ADDRESS } from "../../../Constants/NameScreen";
 import { ExitButtonCircle } from "../../../Components/ExitButton";
 import { CheckSavedAddress } from "../../../Components/CheckBox_Saved_Address";
+import { validatePhone } from '../../../Helper/validate'
 
 const InforConfirm = ({ route, navigation }) => {
     const {
@@ -77,6 +78,7 @@ const InforConfirm = ({ route, navigation }) => {
         navigation.goBack()
     }
     const validate = userName.length > 0 && phoneNumber.length > 0
+        && validatePhone(phoneNumber) == null
     return (
         <View style={styles.modal}>
             <View style={styles.map}>
@@ -101,28 +103,36 @@ const InforConfirm = ({ route, navigation }) => {
                         star={''}
                         keyboardType={'default'}
                         value={homeNumber}
-                        onChangeText={onChangeHomeNumber} />
+                        onChangeText={onChangeHomeNumber}
+                        validate={true} />
                     <TextInput
                         label={'Tên người liên lạc'}
                         placeholder={'Tên'}
                         star={'*'}
                         keyboardType={'default'}
                         value={userName}
-                        onChangeText={onChangeName} />
+                        onChangeText={onChangeName}
+                        validate={true} />
                     <TextInput
                         label={'Số điện thoại'}
                         placeholder={'Số điện thoại'}
                         star={'*'}
                         keyboardType={'numeric'}
                         value={phoneNumber}
-                        onChangeText={onChangePhone} />
+                        onChangeText={onChangePhone}
+                        validate={validatePhone(phoneNumber) == null} />
+
+                    {validatePhone(phoneNumber) != null &&
+                        <Text style={styles.validate}>Số điện thoại chưa hợp lệ</Text>}
+
                     <TextInput
                         label={'Ghi chú cho tài xế'}
                         placeholder={'Ghi chú cho tài xế'}
                         star={''}
                         keyboardType={'default'}
                         value={note}
-                        onChangeText={onChangeNote} />
+                        onChangeText={onChangeNote}
+                        validate={true} />
                     <CheckSavedAddress
                         handleSavedLocate={handleSavedLocate}
                         save={save} />

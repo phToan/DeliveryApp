@@ -12,7 +12,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         marginVertical: 10,
-        height: 55
+        height: 55,
+        marginTop: 20
     },
     label: {
         fontSize: 14,

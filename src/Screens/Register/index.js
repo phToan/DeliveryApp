@@ -9,6 +9,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import axios from 'axios'
 import { styles } from './styles'
 import * as NameScreen from '../../Constants/NameScreen'
+import { instance } from '../../Api/instance'
+import { Header } from '../../Components/Header'
+import { InputField } from '../../Components/TextInputField'
 
 const genderData = [
    { id: 1, label: 'Nam' },
@@ -56,9 +59,7 @@ const Register = () => {
       password: password
    }
    const onClickContinue = async () => {
-      //   navigation.navigate('pass',{data})
-      // await axios.post('http://192.168.1.229:5000/customer/register',data)
-      await axios.post('https://delivery-server-s54c.onrender.com/customer/register', data)
+      await instance.post('/customer/register', data)
          .then(async (res) => {
             if (res.data.err == 0) {
                await AsyncStorage.setItem('refresh_token', res.data.refresh_token)
@@ -188,38 +189,28 @@ const Register = () => {
          />
       )
    }
-   //////==========================================================================================================
 
    return (
       <SafeAreaView style={styles.component}>
-         <View style={styles.header}>
-            <Svg style={styles.background}>
-               <Defs>
-                  <LinearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                     <Stop offset="0%" stopColor="rgba(255,255,255,1)" />
-                     <Stop offset="35%" stopColor="rgba(255,255,255,1)" />
-                     <Stop offset="100%" stopColor="rgba(255,229,220,1)" />
-                  </LinearGradient>
-               </Defs>
-               <Rect width="100%" height="100%" fill="url(#gradient)" />
-            </Svg>
-            <TouchableOpacity style={styles.icon_exit} onPress={onClickExit}>
-               <Icon name='arrow-left' size={20} color={'orange'} />
-            </TouchableOpacity>
-
-            <View style={{ flex: 6 }}>
-               <Text style={styles.text_header}>Đăng ký</Text>
-            </View>
-            <View style={{ flex: 1 }} />
-         </View>
+         <Header onClickReturn={onClickExit} title='Đăng ký' />
 
          <View style={styles.body}>
             <ScrollView>
+
                <View style={[{ borderColor: isName ? 'black' : 'red' }, styles._input]}>
                   {label(name, 'Họ và tên')}
                   {textInput('default', 'Họ và tên', name, setName, verifyName, setValidName, setLength, true, false)}
                </View>
                {Validate(isName, 'Vui lòng nhập ít nhất 6 ký tự')}
+
+               <InputField 
+               disable={true}
+               label={'Họ và tên'}
+               name={name}
+               onChangeText={(text) => setName(text)}
+               validate={true}/>
+
+
                <View style={[styles._input, {
                   borderColor: isValidPhone ? 'black' : 'red'
                }]}>

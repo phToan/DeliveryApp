@@ -1,9 +1,9 @@
-import React from "react"
+import React, { useState } from "react"
 import { View, Text, TextInput, StyleSheet } from "react-native"
 
 const styles = StyleSheet.create({
     body: {
-        marginTop: 10,
+        marginTop: 20,
         borderWidth: 1,
         paddingHorizontal: 10,
         justifyContent: 'center',
@@ -24,25 +24,34 @@ const styles = StyleSheet.create({
 export const InputField = ({
     name,
     onChangeText,
-    focus,
-    onFocus,
-    onBlur,
     disable,
-    label
-}) => (
-    <View style={styles.body}>
-        {focus && <View style={[{ flexDirection: 'row' }, styles.tranform]}>
-            <Text style={styles.label}>{label}</Text>
-        </View>}
-        <TextInput
-            style={{ fontSize: 16, bottom: focus ? 9 : 0 }}
-            defaultValue={name}
-            placeholderTextColor={'black'}
-            placeholder={focus ? '' : label}
-            onChangeText={(text) => onChangeText(text)}
-            onFocus={onFocus}
-            onBlur={onBlur}
-            editable={disable}
-        />
-    </View>
-)
+    label,
+    validate
+}) => {
+    const [focus, setFocus] = useState(true)
+    const onFocus = () => {
+        setFocus(true)
+    }
+    const onBlur = () => {
+        if (name.length == 0) {
+            setFocus(false)
+        }
+    }
+    return (
+        <View style={[styles.body, { borderColor: validate ? 'black' : 'red' }]}>
+            {focus && <View style={[{ flexDirection: 'row' }, styles.tranform]}>
+                <Text style={[styles.label, { color: validate ? 'black' : 'red' }]}>{label}</Text>
+            </View>}
+            <TextInput
+                style={{ fontSize: 16, bottom: focus ? 9 : 0 }}
+                defaultValue={name}
+                placeholderTextColor={'black'}
+                placeholder={focus ? '' : label}
+                onChangeText={(text) => onChangeText(text)}
+                onFocus={onFocus}
+                onBlur={onBlur}
+                editable={disable}
+            />
+        </View>
+    )
+}

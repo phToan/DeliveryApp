@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { View, SafeAreaView, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView } from 'react-native'
-import color from '../../../Assets/color'
+import React, { useState } from 'react'
+import { View, SafeAreaView, Text, TouchableOpacity, ScrollView } from 'react-native'
 import AppContext from '../../../Context/AppContext'
 import { useContext } from 'react'
 import { CHANGE_ADDRESS } from '../../../Constants/NameScreen'
@@ -10,14 +9,14 @@ import { senderName, senderPhone, senderAddress } from '../../../Redux/Reducers/
 import { ButtonConfirm } from '../../../Components/ButtonConfirm'
 import { styles } from './styles'
 import { Header } from '../../../Components/Header'
+import { InputField } from '../../../Components/TextInputField'
+import { validatePhone } from '../../../Helper/validate'
 
 const DetailedAddress = ({ navigation }) => {
    const { setAddress } = useContext(AppContext)
    const senderInfor = useSelector((state) => state.senderSlice)
-   const [addressDetail, setAddressDetail] = useState(senderInfor.address)
    const [nameSender, setNameSender] = useState(senderInfor.name)
    const [phoneSender, setPhoneSender] = useState(senderInfor.phone)
-   const [isValidPhone, setValidPhone] = useState(true);
    const dispatch = useDispatch()
 
    const onClickReturn = () => {
@@ -39,19 +38,12 @@ const DetailedAddress = ({ navigation }) => {
       dispatch(senderAddress(addressDetail))
    }
 
-   const verifyPhone = (phone) => {
-      let phoneNumberRegex = /^(03[2-9]|05[6-9]|07[0-9]|08[1-9]|09[0-9])+([0-9]{7})$/; // Biểu thức chính quy kiểm tra đầu số Việt Nam
-      if (phoneNumberRegex.test(phone)) {
-         return true
-      }
-      return false
-   }
-   const setLenghtPhone = (text) => {
-      if (text.length == 0) {
-         setValidPhone(true)
-      }
+
+   const onChangeText = (text) => {
+      setPhoneSender(text)
    }
 
+   const validate = validatePhone(phoneSender) == null && phoneSender.length > 0 && nameSender.length > 0
    return (
       <SafeAreaView style={{ flex: 1 }}>
          <Header onClickReturn={onClickReturn} title={'Thông tin lấy hàng'} />
@@ -69,7 +61,7 @@ const DetailedAddress = ({ navigation }) => {
                   </View>
                   <View style={styles._body_address}>
                      <View style={{ flex: 3 }}>
-                        <Text style={styles.address}>{addressDetail}</Text>
+                        <Text style={styles.address}>{senderInfor.address}</Text>
                      </View>
                      <TouchableOpacity style={styles.b_change} onPress={onClickChageAddress}>
                         <Text style={styles.t_change}>Thay đổi</Text>
@@ -78,32 +70,20 @@ const DetailedAddress = ({ navigation }) => {
                </View>
                <View style={styles._body_sender}>
                   <Text style={styles.t_infor}>Thông tin người gửi</Text>
-                  <View style={styles.textInput}>
-                     <TextInput
-                        placeholder='Tên người gửi'
-                        defaultValue={nameSender}
-                        placeholderTextColor={color.black}
-                        onChangeText={(text) => {
-                           setNameSender(text)
-                        }}
-                     />
-                  </View>
-                  <View style={[styles._input_pass, {
-                     borderColor: isValidPhone ? color.black : color.red
-                  }]}>
-                     <TextInput
-                        keyboardType='numeric'
-                        placeholder='Số điện thoại'
-                        defaultValue={phoneSender}
-                        placeholderTextColor={color.black}
-                        onChangeText={(text) => {
-                           setPhoneSender(text)
-                           const isvalid = verifyPhone(text)
-                           isvalid ? setValidPhone(true) : setValidPhone(false)
-                           setLenghtPhone(text)
-                        }}
-                     />
-                  </View>
+                  <InputField
+                     disable={true}
+                     label={'Họ và tên'}
+                     name={nameSender}
+                     onChangeText={(text) => setNameSender(text)}
+                     validate={true} />
+                  <InputField
+                     disable={true}
+                     label={'Số điện thoại'}
+                     name={phoneSender}
+                     onChangeText={onChangeText}
+                     validate={validatePhone(phoneSender) == null} />
+                  {validatePhone(phoneSender) != null &&
+                     <Text style={styles.validate}>Số điện thoại chưa hợp lệ</Text>}
                </View>
             </ScrollView>
          </View>
@@ -111,7 +91,7 @@ const DetailedAddress = ({ navigation }) => {
             footerStyle={styles.footer}
             onPress={onClickConfirm}
             title={'Xác nhận'}
-            validate={true} />
+            validate={validate} />
       </SafeAreaView>
    )
 }

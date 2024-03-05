@@ -13,6 +13,10 @@ export const styles = StyleSheet.create({
         borderRadius: 10,
         flex: 5
     },
+    validate: {
+        color: 'red',
+        marginTop: 5
+    },
     map: {
         flex: 1.2,
         width: '100%',

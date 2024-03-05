@@ -23,7 +23,7 @@ export const styles = StyleSheet.create({
     },
     footer: {
         backgroundColor: 'white',
-        flex: 1.2,
+        height: 80,
         justifyContent: 'center',
         padding: 10,
         marginTop: 5
@@ -70,7 +70,6 @@ export const styles = StyleSheet.create({
     },
     _body_sender: {
         marginTop: 10,
-        height: 180,
         backgroundColor: 'white',
         padding: 10
     },
@@ -78,6 +77,9 @@ export const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         color: 'black'
+    },
+    validate: {
+        color: 'red'
     },
     textInput: {
         marginTop: 15,

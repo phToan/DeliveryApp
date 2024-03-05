@@ -8,7 +8,7 @@ export const validatePassword = (password) => {
 
 export const validatePhone = (phone) => {
     let phoneNumberRegex = /^(03[2-9]|05[6-9]|07[0-9]|08[1-9]|09[0-9])+([0-9]{7})$/;
-    if (!phoneNumberRegex.test(phone)) {
+    if (!phoneNumberRegex.test(phone) && phone.length != 0) {
         return 'Số điện thoại chưa hợp lệ'
     }
     return null
