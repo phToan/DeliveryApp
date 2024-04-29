@@ -14,6 +14,11 @@ export const styles = StyleSheet.create({
         color: color.orange,
         fontWeight: 'bold'
     },
+    validate: {
+        color: 'red',
+        marginLeft: 20,
+        marginTop: 5
+    },
     _input: {
         flexDirection: 'row',
         marginHorizontal: 20,

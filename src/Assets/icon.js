@@ -6,3 +6,4 @@ export { default as MaterialIcons } from 'react-native-vector-icons/MaterialIcon
 export { default as Fontisto } from 'react-native-vector-icons/Fontisto'
 export { default as MaterialCommunityIcons } from 'react-native-vector-icons/MaterialCommunityIcons'
 export { default as Octicons } from 'react-native-vector-icons/Octicons'
+export { default as Ionicons } from 'react-native-vector-icons/Ionicons'

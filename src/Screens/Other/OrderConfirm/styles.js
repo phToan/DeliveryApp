@@ -26,7 +26,6 @@ export const styles = StyleSheet.create({
     },
     b_order: {
         flex: 1,
-        backgroundColor: 'darkorange',
         alignItems: 'center',
         justifyContent: 'center',
         paddingVertical: 13
