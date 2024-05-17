@@ -26,6 +26,9 @@ import {
 } from '../../../Components/OrderConfirm';
 import { instance, instanceDirection } from '../../../Api/instance';
 import { createOrder } from '../../../Api/firebase';
+import color from '../../../Assets/color';
+import { TextFont } from '../../../Components/Text';
+import LoadingModal from '../../../Components/LoadingModal';
 
 const OrderConfirm = ({ navigation }) => {
     const [orderInfor, setOrderInfor] = useState('');
@@ -34,6 +37,9 @@ const OrderConfirm = ({ navigation }) => {
     const [fastShip, setFastShip] = useState(true);
     const [expressShip, setExpressShip] = useState(false);
     const [usePoint, setUsePoint] = useState(false);
+    const [useShipCOD, setUseShipCOD] = useState(false);
+    const [shipCOD, setShipCOD] = useState('');
+    const [loading, setLoading] = useState(true);
 
     const senderAddress = useSelector((state) => state.senderSlice.address);
     const receiverAddress = useSelector((state) => state.receiverSlice.address);
@@ -67,17 +73,9 @@ const OrderConfirm = ({ navigation }) => {
     }, []);
 
     const onClickPlaceOrder = async () => {
-        // await instance.post('/order/customer', myOrder)
-        //    .then((res) => {
-        //       if (res.data.err == 0) {
-        //          navigation.navigate('Đơn hàng', { screen: 'Đang chờ' })
-        //          // socket.emit('placeOrder', { id: myOrder.id })
-        //       }
-        //    })
-        //    .catch((err) => {
-        //       console.log(err)
-        //    })
-        await createOrder(myOrder);
+        setLoading(true);
+        await createOrder(myOrder, navigation);
+        setLoading(false);
     };
 
     const onClickUsePoint = () => {
@@ -97,6 +95,7 @@ const OrderConfirm = ({ navigation }) => {
                 const distanceString = data.routes[0].legs[0].distance.value;
                 const distance = parseFloat(distanceString);
                 setDistance((distance / 1000).toFixed(1));
+                setLoading(false);
             }
         } catch (error) {
             console.log('Lỗi 2:', error);
@@ -123,11 +122,13 @@ const OrderConfirm = ({ navigation }) => {
     }, [expressShip, distance]);
 
     const deliveryFee = useMemo(() => {
+        const totalFee =
+            transportFee + (isNaN(Number(shipCOD)) ? 0 : Number(shipCOD));
         if (usePoint) {
-            return transportFee - point * 100;
+            return totalFee - point * 100;
         }
-        return transportFee;
-    }, [transportFee, usePoint]);
+        return totalFee;
+    }, [transportFee, usePoint, shipCOD]);
 
     const myOrder = {
         id: Date.now().toString(),
@@ -145,6 +146,12 @@ const OrderConfirm = ({ navigation }) => {
         distance: distance,
         price: deliveryFee,
         customer_id: id,
+        latSender: senderCoordinate?.latitude,
+        longSender: senderCoordinate?.longitude,
+        latReceiver: receiverCoordinate?.latitude,
+        longReceiver: receiverCoordinate?.longitude,
+        COD: shipCOD,
+        transportFee: transportFee,
     };
 
     const handleInforOrder = (text) => {
@@ -179,6 +186,7 @@ const OrderConfirm = ({ navigation }) => {
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
+            <LoadingModal visible={loading} />
             <Header onClickReturn={onClickReturn} title="Thanh toán" />
             <View style={{ flex: 14 }}>
                 <ScrollView>
@@ -259,6 +267,66 @@ const OrderConfirm = ({ navigation }) => {
                         />
                     </View>
 
+                    <View style={{ backgroundColor: 'white' }}>
+                        <View style={styles.point}>
+                            <View style={styles.point_title}>
+                                <MaterialIcons
+                                    name="monetization-on"
+                                    size={25}
+                                    color={
+                                        useShipCOD ? color.BlueColor : 'silver'
+                                    }
+                                />
+                                <Text style={styles.point_main}>Ship COD</Text>
+                            </View>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setUseShipCOD((prev) => !prev);
+                                    if (!useShipCOD) {
+                                        setShipCOD('');
+                                    }
+                                }}
+                            >
+                                <Fontisto
+                                    name={
+                                        useShipCOD ? 'toggle-on' : 'toggle-off'
+                                    }
+                                    size={35}
+                                    color={
+                                        useShipCOD ? color.BlueColor : 'silver'
+                                    }
+                                />
+                            </TouchableOpacity>
+                        </View>
+                        {useShipCOD && (
+                            <View
+                                style={{
+                                    margin: 10,
+                                    marginTop: 0,
+                                    borderWidth: 1,
+                                    borderColor: color.BlueColor,
+                                    padding: 10,
+                                    flexDirection: 'row',
+                                }}
+                            >
+                                <TextFont
+                                    title={'đ '}
+                                    fs={16}
+                                    color={color.BlueColor}
+                                    underline="underline"
+                                    fw={'500'}
+                                />
+                                <TextInput
+                                    placeholder="Nhập số tiền cần trả trước"
+                                    placeholderTextColor={color.BorderGrayColor}
+                                    style={{ fontSize: 16, width: '100%' }}
+                                    onChangeText={(text) => setShipCOD(text)}
+                                    value={shipCOD}
+                                />
+                            </View>
+                        )}
+                    </View>
+
                     <View style={styles.point}>
                         <View style={styles.point_title}>
                             <MaterialIcons
@@ -297,6 +365,16 @@ const OrderConfirm = ({ navigation }) => {
                                 <Text> {transportFee.toLocaleString()}</Text>
                             </View>
                         </View>
+
+                        {shipCOD && (
+                            <View style={styles.deli_fee}>
+                                <Text>COD</Text>
+                                <View style={{ flexDirection: 'row' }}>
+                                    <Text style={styles.underline}>đ</Text>
+                                    <Text> {shipCOD.toLocaleString()}</Text>
+                                </View>
+                            </View>
+                        )}
 
                         {usePoint && (
                             <View style={styles.deli_fee}>

@@ -1,5 +1,9 @@
 import axios from 'axios';
-export const BASE_URL = 'http://localhost:3306';
+// export const BASE_URL = 'http://192.168.1.66:3306'; // home
+export const BASE_URL = 'http://192.168.73.241:3306'; // redmi
+
+// export const BASE_URL = 'http://localhost:3306'; //simulator
+// export const BASE_URL = 'http://192.168.1.163:3306'; // vatek
 const API_KEY = 'uGwlo6yHxKnoqSPqp0Enla92wOd1YpmpbYrEy3GK';
 
 export const instance = axios.create({

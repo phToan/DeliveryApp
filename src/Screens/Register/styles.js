@@ -1,17 +1,19 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet } from 'react-native';
+import color from '../../Assets/color';
 
 export const styles = StyleSheet.create({
     component: {
-        flex: 1
+        flex: 1,
+        backgroundColor: color.white,
     },
     header: {
         height: 100,
-        borderBottomWidth: .2,
+        borderBottomWidth: 0.2,
         borderColor: 'orange',
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'row',
-        alignItems: 'flex-end'
+        alignItems: 'flex-end',
     },
     background: {
         position: 'absolute',
@@ -25,15 +27,15 @@ export const styles = StyleSheet.create({
         marginBottom: 20,
         fontWeight: 'bold',
         color: 'orange',
-        textAlign: 'center'
+        textAlign: 'center',
     },
     icon_exit: {
         flex: 1,
         alignItems: 'center',
-        marginBottom: 20
+        marginBottom: 20,
     },
     body: {
-        flex: 1
+        flex: 1,
     },
     footer: {
         marginHorizontal: 40,
@@ -55,7 +57,7 @@ export const styles = StyleSheet.create({
         borderRadius: 30,
         backgroundColor: 'orange',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     LabelViewGender: {
         height: 50,
@@ -64,17 +66,17 @@ export const styles = StyleSheet.create({
         borderRadius: 10,
         backgroundColor: 'blue',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     LabelTextView: {
         color: 'white',
         fontWeight: 'bold',
-        fontSize: 16
+        fontSize: 16,
     },
     TextInput: {
         // marginHorizontal: 10,
         fontSize: 16,
-        width: '90%'
+        width: '90%',
     },
     _input: {
         height: 50,
@@ -83,7 +85,7 @@ export const styles = StyleSheet.create({
         borderRadius: 10,
         marginTop: 20,
         marginHorizontal: 10,
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
     _input_pass: {
         height: 50,
@@ -94,7 +96,7 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 15,
         justifyContent: 'space-between',
         borderRadius: 10,
-        alignItems: 'center'
+        alignItems: 'center',
     },
     _input_dob: {
         height: 50,
@@ -118,5 +120,4 @@ export const styles = StyleSheet.create({
         marginRight: 10,
         marginTop: 20,
     },
-
-})
+});

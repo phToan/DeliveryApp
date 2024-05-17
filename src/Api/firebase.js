@@ -1,7 +1,7 @@
 import { getDatabase, ref, push, set, get } from 'firebase/database';
 import firebaseDB from '../../firebaseConfig';
 
-const initOrderItem = (item) => {
+export const createOrder = (item, navigation) => {
     console.log(item);
     const db = getDatabase(firebaseDB);
     const newData = push(ref(db, 'order'));
@@ -14,6 +14,8 @@ const initOrderItem = (item) => {
             address: item?.sender_address,
             subAddress: item?.sender_detail_address,
             note: item?.noteSender ?? '',
+            lat: item?.latSender,
+            long: item?.longSender,
         },
         receiverInfo: {
             name: item?.receiver_name,
@@ -21,6 +23,8 @@ const initOrderItem = (item) => {
             address: item?.receiver_address,
             subAddress: item?.receiver_detail_address,
             note: item?.noteReceiver ?? '',
+            lat: item?.latReceiver,
+            long: item?.longReceiver,
         },
         size_item: item?.size_item,
         detail_item: item?.detail_item,
@@ -37,15 +41,15 @@ const initOrderItem = (item) => {
             onFailure: '',
             status: 0,
         },
+        COD: item?.COD,
+        transportFee: item?.transportFee,
     })
-        .then((res) => {
-            console.log('res: ', res);
+        .then(() => {
+            navigation.navigate('Đơn hàng', {
+                screen: 'Đang chờ',
+            });
         })
         .catch((err) => {
             console.log(('err: ', err));
         });
-};
-
-export const createOrder = async (item) => {
-    await initOrderItem(item);
 };

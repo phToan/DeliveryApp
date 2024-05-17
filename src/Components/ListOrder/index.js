@@ -30,7 +30,6 @@ export const ListOrder = ({
             ListEmptyComponent={() => (
                 <EmptyComponent />
             )}
-
         />
     </SafeAreaView>
 )
