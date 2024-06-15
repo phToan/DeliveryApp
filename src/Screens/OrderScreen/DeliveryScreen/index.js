@@ -13,6 +13,7 @@ import {
     remove,
     onChildAdded,
     onChildRemoved,
+    update
 } from 'firebase/database';
 import { instance } from '../../../Api/instance';
 
@@ -56,33 +57,33 @@ const Delivery = ({ navigation }) => {
                 const keys = Object.keys(snapshot.val() ?? []);
                 arr.map((e, index) => {
                     e?.driver?.status === 2 && arrData.unshift(e);
-                    e?.driver?.status === 3 &&
-                        (saveData(
-                            {
-                                id: e?.id,
-                                sender_name: e?.senderInfo?.name,
-                                sender_phone: e?.senderInfo?.phone,
-                                sender_address: e?.senderInfo?.address,
-                                sender_detail_address:
-                                    e?.senderInfo?.subAddress,
-                                receiver_name: e?.receiverInfo?.name,
-                                receiver_phone: e?.receiverInfo?.phone,
-                                receiver_address: e?.receiverInfo?.address,
-                                receiver_detail_address:
-                                    e?.receiverInfo?.subAddress,
-                                size_item: e?.size_item,
-                                detail_item: e?.detail_item,
-                                infor_shipping: e?.info_shipping,
-                                distance: e?.distance,
-                                price: e?.price,
-                                customer_id: e?.customer_id,
-                                status: 3,
-                                driver_id: e?.driver?.id,
-                                confirm_order_at: e?.driver?.onSuccess,
-                            },
-                            keys[index]
-                        ),
-                        console.log('abc'));
+                    // e?.driver?.status === 3 &&
+                    //     (saveData(
+                    //         {
+                    //             id: e?.id,
+                    //             sender_name: e?.senderInfo?.name,
+                    //             sender_phone: e?.senderInfo?.phone,
+                    //             sender_address: e?.senderInfo?.address,
+                    //             sender_detail_address:
+                    //                 e?.senderInfo?.subAddress,
+                    //             receiver_name: e?.receiverInfo?.name,
+                    //             receiver_phone: e?.receiverInfo?.phone,
+                    //             receiver_address: e?.receiverInfo?.address,
+                    //             receiver_detail_address:
+                    //                 e?.receiverInfo?.subAddress,
+                    //             size_item: e?.size_item,
+                    //             detail_item: e?.detail_item,
+                    //             infor_shipping: e?.info_shipping,
+                    //             distance: e?.distance,
+                    //             price: e?.price,
+                    //             customer_id: e?.customer_id,
+                    //             status: 3,
+                    //             driver_id: e?.driver?.id,
+                    //             confirm_order_at: e?.driver?.onSuccess,
+                    //         },
+                    //         keys[index]
+                    //     ),
+                    //     console.log('abc'));
                 });
                 setData(arrData);
             };
@@ -92,6 +93,9 @@ const Delivery = ({ navigation }) => {
             const onRemoved = onChildRemoved(dataRef, (snapshot) => {
                 const removedFieldId = snapshot.key;
                 console.log(`Trường với ID ${removedFieldId} đã bị xóa.`);
+                navigation.navigate('Đơn hàng', {
+                    screen: 'Đã giao',
+                });
             });
             return () => {
                 off(dataRef, onDataChange);
@@ -107,15 +111,14 @@ const Delivery = ({ navigation }) => {
         await instance
             .post('/order/customer', myOrder)
             .then((res) => {
+                console.log(res.status);
                 if (res.data.err == 0) {
                     const updateData = {
                         status: 5,
                     };
                     update(dataRef, updateData)
                         .then(() => {
-                            navigation.navigate('Đơn hàng', {
-                                screen: 'Đã giao',
-                            });
+                            
                             console.log('update success');
                         })
                         .catch((e) => {

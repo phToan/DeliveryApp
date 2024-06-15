@@ -25,7 +25,11 @@ const Cancel = ({ navigation }) => {
 
    const getData = async () => {
       const data = await fetchData(payload)
-      setData(data)
+      let arrData = []
+        data.map((item)=>{
+            arrData.unshift(item)
+        })
+        setData(arrData);
    }
 
    useEffect(() => {

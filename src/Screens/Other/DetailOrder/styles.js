@@ -4,6 +4,13 @@ export const styles = StyleSheet.create({
     component: {
         flex: 1,
     },
+    map_view: {
+        marginTop: 10,
+        marginBottom: 10,
+        backgroundColor: 'white',
+        height: 250,
+        padding: 10,
+    },
     header: {
         height: 80,
         justifyContent: 'center',

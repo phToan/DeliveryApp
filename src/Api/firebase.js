@@ -43,6 +43,7 @@ export const createOrder = (item, navigation) => {
         },
         COD: item?.COD,
         transportFee: item?.transportFee,
+        isAutoWait: false
     })
         .then(() => {
             navigation.navigate('Đơn hàng', {

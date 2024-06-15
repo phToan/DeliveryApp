@@ -38,7 +38,7 @@ export const InforDriver = ({ onPress, driver, id }) => {
     const [avatar, setAvatar] = useState('');
     const getKey = () => {
         const database = getDatabase();
-        const dataRef = ref(database, 'avatar/driver');
+        const dataRef = ref(database, 'active_status');
         const onDataChange = (snapshot) => {
             const newData = snapshot.val() ?? [];
             const arr = Object.values(newData);
